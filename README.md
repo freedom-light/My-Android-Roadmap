@@ -14,9 +14,6 @@
 
 ## 📁 目录结构
 ├── /Daily-Notes # 存放每日学习笔记
-
 ├── /Practice-Projects # 存放练习的小项目
-
 ├── /Resources # 存放收集的学习资源链接
-
 └── README.md
