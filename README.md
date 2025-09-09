@@ -13,7 +13,7 @@
 - **阶段五：Jetpack Compose 与工程化** (预计时间：1周)
 
 ## 📁 目录结构
-├── /Daily-Notes # 存放每日学习笔记
+├── /Weekly-Notes # 存放每周学习笔记
 
 ├── /Practice-Projects # 存放练习的小项目
 
