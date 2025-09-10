@@ -217,7 +217,21 @@ taskListView.setOnItemLongClickListener { _, _, position, _ ->
 
 <img width="345" height="94" alt="image" src="https://github.com/user-attachments/assets/b0c03c55-3390-4458-b296-4a721ba6d3de" />
 
+## 5.遇到的问题
+### 5.1.在点击添加按钮后，视图无反应
+输入的String用mutableListOf<String>统一管理，这里面只有数据，UI部分是独立于数据的ListView，需要用适配器将UI与数据集关联起来。这样设计是为了解耦，让各个部分职责单一，灵活可变。
+使用适配器的**流程**：
+1. **准备数据源**
+2. **创建适配器并与数据源绑定**
+3. **找到列表视图**
+4. **为列表视图设置适配器**
+5. **数据变化时修改数据源并通知适配器**
 
+举个例子：现在有电视台的编导，节目单，电视机
+节目单里面有很多节目，电视台编导的职责是把节目转为电视机可以接受的信号，电视机(UI)在收到信号后，播放节目。
+使用`ArrayAdapter(this, android.R.layout.simple_list_item_1, textList)`初始化适配器就是告诉编导，在哪里工作，使用什么模版播放节目，节目源在哪。
+`viewList.adapter = adapter`，相当于把编导请到家中，为你家电视机提供信号。
+当节目单更新时，编导是不知道的，使用`adapter.notifyDataSetChanged()`，就相当于告诉编导，节目单更新了，编导就会立即检查新的节目单，然后重新生成信号，电视机的画面也就随之刷新了。
 
 
 
