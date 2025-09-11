@@ -165,10 +165,6 @@ AAPT2会收集所有资源文件中的所有资源，为每个资源分配一个
 清除当前布局中所有约束。
 
 ```kotlin
-import android.widget.Button
-import android.widget.TextView
-
-
 // 添加以下代码：获取控件并设置点击事件
 val button: Button = findViewById(R.id.button)  // 获取按钮
 val textView: TextView = findViewById(R.id.textView)  // 获取TextView
@@ -187,35 +183,29 @@ button.setOnClickListener {
 <img width="416" height="155" alt="image" src="https://github.com/user-attachments/assets/d4fdf77e-ed2f-4bdc-9886-91cab2216318" />
 
 ### 4.2.做一个 待办清单 App（TodoList）Demo：支持新增、删除任务，数据保存到内存（无需数据库）
+完成这个任务需要以下几个对象：数据集，适配器，UI列表，添加任务按钮，输入任务的文本。
+
+数据集与UI列表分开的设计，有利于解耦合，让某个对象只完成单一任务。
+
+核心功能设计：
+1. 新增任务：通过EditText输入，点击Button后添加到列表
+2. 删除任务：通过列表项的点击/长按事件移除
+3. 数据存储：使用MutableList<String>将数据存储在内存
+
+关键点：
+_, _, position, _ ->
+
+这个是Kotlin中lambda表达式的一种形式，可以通过”_”跳过不需要的,如果lambda是函数的最后一个参数，可以放在括号右边。
 ```kotlin
-// 无需保存在数据库，通过成员遍历保存在数据库即可。
-// 用于存储任务的列表（内存中）
-private val taskList = mutableListOf<String>()
-private lateinit var adapter: ArrayAdapter<String>
-private lateinit var taskInput: EditText
-private lateinit var taskListView: ListView
-// lateinit 关键字代表延迟初始化，但需要确保在运行期通过findViewById找到实际的内存对象。
-// 初始化视图
-taskInput = findViewById(R.id.taskInput)
-val addButton: Button = findViewById(R.id.addButton)
-taskListView = findViewById(R.id.taskListView)
-
-// 并且对按钮添加对应的事件，类似于Qt信号槽的绑定过程
-
-// 添加任务按钮点击事件
-addButton.setOnClickListener {
-    addTask()
-}
-// 列表项长按删除事件
-taskListView.setOnItemLongClickListener { _, _, position, _ ->
-    removeTask(position)
-    true // 返回true表示已处理事件
+viewList.setOnItemClickListener{_, _, position, _->
+    removeView(position)
+    true
 }
 ```
-
-含义就是在addButton触发点击按钮事件后，调用addTask函数_, _, position, _ ->这个是Kotlin中lambda表达式的一种形式，可以通过_跳过不需要的
-
-<img width="345" height="94" alt="image" src="https://github.com/user-attachments/assets/b0c03c55-3390-4458-b296-4a721ba6d3de" />
+可优化方向
+1. 本地存储持久化数据（如使用Room数据库）
+2. 新增编辑任务功能
+3. 添加任务状态 完成/未完成
 
 ## 5.遇到的问题
 ### 5.1.在点击添加按钮后，视图无反应
@@ -233,6 +223,22 @@ taskListView.setOnItemLongClickListener { _, _, position, _ ->
 `viewList.adapter = adapter`，相当于把编导请到家中，为你家电视机提供信号。
 当节目单更新时，编导是不知道的，使用`adapter.notifyDataSetChanged()`，就相当于告诉编导，节目单更新了，编导就会立即检查新的节目单，然后重新生成信号，电视机的画面也就随之刷新了。
 
+### 5.2.setOnItemClickListener和setOnClickListener
+<img width="345" height="94" alt="image" src="https://github.com/user-attachments/assets/a2583284-f6f6-4761-bd12-aac412b3218c" />
+- setOnItemClickListener设置点击“单件”的事件监听事件才是用于视图集的
+- setOnClickListener是给单个View设置的。
+
+在4.2demo使用时，是对某个单件进行长按删除，获取到被点击项在列表中的位置，之后对其进行删除。查看官方文档可知，最后返回true代表回掉函数消耗掉了点击。所以最后记得true
+
+### 5.3.不知如何找到适合的API
+官方文档的内容虽然很全面，并且记录的很详细，但是通过通篇阅读找到想要的API的难度无异于大海捞针。
+可以通过搜索特定关键词，例如第二个demo中想要一个“简单对删除任务进行反馈”的功能，可以搜索Toast。
+正常的学习路径可以是
+1. 在这里有一个想法（弹框提示）
+2. 在IDE/官方文档尝试搜索
+3. 如果没找到，快速搜索
+4. 先复制-粘贴，实现想要的功能，完成“是什么”“怎么用”的步骤
+5. 之后可以去官方文档中详细了解“为什么”，了解深层次原理
 
 
 
