@@ -215,6 +215,65 @@ kotlin明确将可空性作为其类型系统的一部分，这意味着你可�
 | dependencies | 声明当前项目（或模块）所依赖的代码库 |
 | plugins | 声明和应用构建插件，这些插件会为项目添加额外的功能、任务和约定 | 
 
+## 2.Activity & Fragment 生命周期
+### 2.1.Activity
+类似于Qt的QMainWindow，主窗口类，应用的主要窗口/界面
+
+| Activity 生命周期 | 与 Qt QMainWindow 类比 | 功能描述                                   |
+| :---------------- | :--------------------- | :----------------------------------------- |
+| onCreate          | 构造函数               | 构造函数+初始化UI，仅调用一次                |
+| onStart           | show()                 | 显示窗口                                   |
+| onResume          | 获得焦点               | 获得焦点，窗口激活，可交互                   |
+| onPause           | 失去焦点               | 失去焦点                                   |
+| onStop            | hide()                 | 隐藏窗口                                   |
+| onDestroy         | 析构函数               | 析构函数，清理资源                           |
+
+### 2.2.Fragment
+类似于Qt中的控件如QWidget，QDialog
+| Fragment 生命周期 | 与 Qt 中控件类比       | 功能描述                     |
+| :---------------- | :--------------------- | :--------------------------- |
+| onCreate          | 构造函数               | 初始化数据非UI相关组件         |
+| onCreateView      | 将控件添加到布局       | 创建准备UI                   |
+| onStart           | show()                 | 显示窗口                     |
+| onResume          | 获得焦点               | 窗口激活，可以交互           |
+| onDestroyView     | 从布局移除但对象还在   | UI销毁但对象还在             |
+| onDestroy         | 析构函数               | 完全销毁，清理资源           |
+
+## 3.常见布局（LinearLayout、ConstraintLayout）
+### 3.1.LinearLayout(线性布局)
+这种布局方式会将子视图按照水平/垂直方向依次排列。
+- horizontal：水平排列（默认）
+- vertical：垂直排列
+结构简单，易于理解和使用，适合简单的线性排列场景`嵌套层级过深时会影响性能`，复杂布局难以实现。
+
+### 3.2.ConstraintLayout(约束布局)
+通过约束关系定位子视图，允许在平面上灵活摆放控件，有效减少布局嵌套，支持比例约束，角度约束等高级功能。
+
+通过约束布局，定义控件之间的相对位置关系，减少层级嵌套。从而缓解嵌套布局导致的层级深，计算量大，耗时长，产生的渲染变慢，滑动卡顿的问题。
+扁平化不是要完全消除嵌套，而是消除那些不必要的、只起包装作用的中间视图容器。
+
+## 4.RecyclerView
+为一个功能强大且灵活的视图容器，可以用其高效的显示大量数据，列表项滚动出屏幕时，RecyclerView不会销毁它，而是放入回收池中等待复用，他的设计基于几个关键的概念。
+| 名字                 | 功能                                                                                                                              |
+| :------------------- | :-------------------------------------------------------------------------------------------------------------------------------- |
+| RecyclerView         | 本身是一个ViewGroup，它本身就是视图，在屏幕上占据一块位置，负责每个列表项的摆放，与何时回收不可见项。                                  |
+| Adapter              | Adapter是RecyclerView与数据源之间的桥梁，负责创建视图、将数据填充到已存在的ViewHolder中                                               |
+| ViewHolder           | 是一个静态内部类，负责缓存视图的查找结果，每个列表项对应一个ViewHolder实例。它持有对列表项布局内各个子视图的引用。                         |
+| LayoutManager        | 负责决定列表项如何排列在屏幕上，Android提供了几种默认实现，LinearLayoutManager(线性布局)，GridLayoutManager(网格布局)，StaggeredGridLayoutManager(交错的网格布局)。也可以自定义LayoutManager来实现特殊的布局，但比较复杂。 |
+| ItemDecoration       | 负责绘制列表项之间的分割线、高亮、偏移。                                                                                            |
+| ItemAnimator         | 负责处理列表项的动画效果，如当数据被添加、删除、移动时，项的出现/消失动画，默认提供简单的动画效果。                                       |
+
+实现RecyclerView的基本步骤。
+1. 确定列表/网格的外观，一般来说，可以使用RecyclerView库的某个标准布局管理器。
+2. 设计列表中每个元素的外观和列表。根据设计扩展ViewHolder类。
+3. 定义用于将您的数据与 ViewHolder 视图相关联的 Adapter。
+定义适配器时需要替换三个关键方法：
+onCreateViewHolder()
+LayoutInflater,是一个系统类，负责XML布局转换为实际的view对象
+LayoutInflater.from(parent.context)，获取父容器上下文
+.inflate(R.layout.item_layout, parent, false)
+onBindViewHolder()
+getItemCount()
 
 
 
