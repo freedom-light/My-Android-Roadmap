@@ -31,4 +31,15 @@ plugins {
 }
 ```
 
+```kotlin
+（2）在模块级build.gradle.kts中启用KSP
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+
+    // 添加 KSP 插件
+    alias(libs.plugins.ksp)
+}
+```
+
 
