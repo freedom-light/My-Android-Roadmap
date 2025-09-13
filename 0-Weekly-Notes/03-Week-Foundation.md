@@ -18,3 +18,17 @@ Room 持久性库在 SQLite 上提供了一个抽象层，以便在充分利用 
 | `@Ignore` | 忽略被标记的字段，不会在数据库表中为其创建对应的列。 |
 | `@ForeignKey` | 定义外键约束，用于关联另一张表，保证引用的完整性。 |
 | `@Index` | 为表的特定列创建索引，以提高查询速度，但可能会降低插入和更新数据的速度。 |
+
+#### 1.1.2.在项目中使用Room
+```kotlin
+// （1）在顶级build.gradle.kts中声明KSP插件
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+plugins {
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.kotlin.android) apply false
+// apply false只声明插件，但不应用到当前模块，通常在顶级build...中使用
+    alias(libs.plugins.ksp) apply false
+}
+```
+
+
