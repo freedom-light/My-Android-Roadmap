@@ -104,12 +104,12 @@ androidx-retrofit2 = { group = "com.squareup.retrofit2", name = "retrofit", vers
 implementation(libs.androidx.retrofit2)
 ```
 
-此外还需要配置converter-gson(转换器库)
+此外还需要配置`converter-gson(转换器库)`
 原因是：retrofit核心库的作用是提供网络请求的核心功能，但是此时请求到的数据不能被直接使用，需要使用converter-gson转换器库配合gson，将API返回的JSON数据自动转换为数据对象。converter-gson负责告诉retrofit如何使用gson来解析数据，gson负责真正的JSON与对象直接的转换。
-retrofit和converter-gson两个库版本要求一样。
+**retrofit和converter-gson两个库版本要求一样。**
 
 小tip
-* 可以看出在构建文件中，是没有“-”的用“.”代替
+可以看出在构建文件中，是没有“-”的用“.”代替
 ```kotlin
 implementation(libs.androidx.retrofit)
 implementation(libs.androidx.converter.gson)
@@ -180,6 +180,28 @@ interface NewsApiService {
 最后对接口进行实例，但是接口是不能直接实例出对象的(NewsApiService)，关键的地方是`retrofit.create(NewsApiService::class.java)`，retrofit.create会在运行时生成一个NewsApiService 接口的**实现类**，在这个实现类里面，通过你的注解，**转换为真实的HTTP请求逻辑**（比如拼接 URL、处理参数、调用 OkHttpClient 发请求）
 
 #### 2.4.1.建造者模式
+**建造者模式是一种创建型设计模式，它的主要目的是将一个对象的构建和表示分离，使得同样的构建过程可以创建不同的表示。**
+
+需要建造者模式的原因
+* 构造函数参数爆炸：现在需要创建一个复杂的对象，如果使用传统的构造函数的方式，需要重载极多的构造函数，并且其中许多参数可能是不必要的或需要默认值的，这会导致代码难以阅读和维护。
+* Setter方法的不一致状态：如果使用setter方法，在对象完全构建出来之前，它可能处于一种部分初始化的状态，这不是线程安全的，也容易出错。
+* 构建过程缺乏控制：无法强制客户端按照特定的顺序或步骤来构建对象。
+建造者模式通过提供一个独立的`建造者`类来解决这些问题，由它来负责对象的逐步构建，最后返回一个完整的产品。
+
+建造者模式通常包含一下四个角色：
+1. 产品：要创建的复杂对象
+2. 抽象建造者：为创建一个产品的各个部分指定抽象接口，通常包含构建各个部分的方法和一个返回最终产品的接口。（是具体建造者的抽象类）
+3. 具体建造者：具体实现抽象建造者中的接口。
+4. 指挥者（简单场景中可简化合并到客户端代码中）
+
+```
+Computer gamingComputer = new Computer.ComputerBuilder("Intel i9", "32GB")
+                .setGraphicsCard("NVIDIA RTX 4080")
+                .setStorage("1TB SSD")
+                .setOs("Windows 11")
+                .build(); // 最终调用 build 方法创建对象
+```
+如上代码，首先调用建造者构造函数提供必须参数，之后选用建造者接口，实现了同样的建造过程可以创建出不同的表示。最后调用build创建一个完整的对象。
 ### 2.5.发起网络请求并处理结果
 在实际的界面（如 MainActivity）中使用这个配置好的 RetrofitClient 来发起网络请求并处理响应
 
