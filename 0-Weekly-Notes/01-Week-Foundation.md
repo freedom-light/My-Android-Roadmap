@@ -225,7 +225,14 @@ viewList.setOnItemClickListener{_, _, position, _->
 当节目单更新时，编导是不知道的，使用`adapter.notifyDataSetChanged()`，就相当于告诉编导，节目单更新了，编导就会立即检查新的节目单，然后重新生成信号，电视机的画面也就随之刷新了。
 
 ### 5.2.setOnItemClickListener和setOnClickListener
-<img width="345" height="94" alt="image" src="https://github.com/user-attachments/assets/a2583284-f6f6-4761-bd12-aac412b3218c" />
+```kotlin
+setOnItemLongClickListener { parent, view, position, id ->
+    // parent: 哪个 ListView 被点击
+    // view: 被点击的具体列表项视图
+    // position: 被点击项在列表中的位置（最重要!)
+    // id: 被点击项的行ID
+}
+```
 
 - setOnItemClickListener设置点击“单件”的事件监听事件才是用于视图集的
 - setOnClickListener是给单个View设置的。
