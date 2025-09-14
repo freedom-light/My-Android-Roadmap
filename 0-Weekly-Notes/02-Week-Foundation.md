@@ -275,6 +275,29 @@ LayoutInflater.from(parent.context)，获取父容器上下文
 onBindViewHolder()
 getItemCount()
 
+## 5.小demo
+### 5.1.完成一个「名片展示 App」：包含顶部头像、姓名、简介
+<img width="213" height="173" alt="image" src="https://github.com/user-attachments/assets/423094b1-79e2-4786-8cbd-bfdce8d0c48a" />
+
+## 6.遇到的问题
+### 6.1.重启Android Studio后，遇到build.gradle.kts报错
+<img width="99" height="20" alt="image" src="https://github.com/user-attachments/assets/23a3916b-14b3-4269-8c4d-46fb7997c6de" />
+
+可能是因为缓存临时异常，Gradle状态不同步。可以通过ViSync Now强制重新去读取所有 Gradle 相关的配置文件，重新建立依赖关系、检查语法等。
+
+<img width="125" height="170" alt="image" src="https://github.com/user-attachments/assets/f190e882-7c03-4542-b5b5-f2dffae26dbd" />
+
+### 6.2.对图片重命名后报错
+<img width="287" height="71" alt="image" src="https://github.com/user-attachments/assets/3d62fba7-2926-48d9-b9ba-d547c5110757" />
+
+解决方案：资源文件的名称必须以字母开头，1.jpg开头有问题
+
+### 6.3.ImageView未显示
+ImageView默认不会起到占位作用，tools:srcCompat 只是 Android Studio 预览工具使用的占位图，仅在设计视图中显示，不会在实际运行时生效。
+所以如果没有设置图片，在运行时会像没有加ImageView一样。
+app:srcCompat = "@drawable/ic_launcher_background"
+可以先设置一个默认图片。
+
 
 
 
