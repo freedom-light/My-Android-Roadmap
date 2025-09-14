@@ -225,6 +225,7 @@ viewList.setOnItemClickListener{_, _, position, _->
 
 ### 5.2.setOnItemClickListener和setOnClickListener
 <img width="345" height="94" alt="image" src="https://github.com/user-attachments/assets/a2583284-f6f6-4761-bd12-aac412b3218c" />
+
 - setOnItemClickListener设置点击“单件”的事件监听事件才是用于视图集的
 - setOnClickListener是给单个View设置的。
 
