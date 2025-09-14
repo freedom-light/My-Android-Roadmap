@@ -183,7 +183,18 @@ interface NewsApiService {
 ### 2.5.发起网络请求并处理结果
 在实际的界面（如 MainActivity）中使用这个配置好的 RetrofitClient 来发起网络请求并处理响应
 
-## 收获经验/优化点
+## 3.理解 ViewModel + Flow 基本用法
+
+## 4.了解 ViewModel + LiveData 基本用法
+
+## 5.遇到的问题
+### 5.1.androidTestImplementation引入后无法使用库
+androidTestImplementation 用于引入那些需要在 Android 设备上运行的测试依赖。需要注意对于主应用程序要使用的部分，要使用implementation，使用androidTestImplementation 在import引入库的时候，无法成功。
+由此可见，retrofit库已经成功引入了。
+<img width="633" height="750" alt="image" src="https://github.com/user-attachments/assets/2188c50a-6e44-4b4f-bf70-e72c1adecf07" />
+
+
+## 6.收获经验/优化点
 * 改架构然后监听状态，
 * 格式化管理，new -> package
 * 不要信任服务端的数据，进行空校验，或者赋值为可空，不然调用空对象，会崩要避免API字段返回null导致的解析崩溃
