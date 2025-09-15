@@ -1,10 +1,4 @@
 # 一.第一周内容
-
-<img width="203" height="219" alt="image" src="https://github.com/user-attachments/assets/4c654f59-17eb-403d-8b52-f8f1d4f640b4" />
-
-<img width="279" height="396" alt="image" src="https://github.com/user-attachments/assets/ba8dbf86-feaf-4585-92e2-e7b1bc41492c" /><img width="279" height="396" alt="image" src="https://github.com/user-attachments/assets/4ffadce4-6668-4e79-9272-5c3182fd5628" />
-
-
 ## 1.下载了Android Studio<img width="63" height="12" alt="image" src="https://github.com/user-attachments/assets/081a7ca1-256f-427c-984c-c9c1c2c2e5ea" />  
 
 <img width="238" height="195" alt="image" src="https://github.com/user-attachments/assets/26de01eb-fac6-475f-9d55-4f026f75d86c" />
