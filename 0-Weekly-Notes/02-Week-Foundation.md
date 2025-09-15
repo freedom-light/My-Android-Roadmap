@@ -291,9 +291,55 @@ RecyclerView 中的列表项由 LayoutManager 类负责排列。RecyclerView �
 * `onBindViewHolder()`：RecyclerView 调用此方法将 ViewHolder 与数据相关联。此方法会提取适当的数据，并使用该数据填充 ViewHolder 的布局。例如，如果 RecyclerView 显示的是一个名称列表，该方法可能会在列表中查找适当的名称，并填充 ViewHolder 的 TextView widget。
 * `getItemCount()`：RecyclerView 调用此方法来获取数据集的大小。例如，在通讯簿应用中，这可能是地址总数。 RecyclerView 使用此方法来确定什么时候没有更多的列表项可以显示。
 
+### 4.3.RecyclerView具体实现
+1.确定列表/网格布局
+```kotlin
+val recycler: RecyclerView = findViewById(R.id.recyclerView)
+recycler.layoutManager = LinearLayoutManager(this)
+```
+2.实现Adapter类和ViewHolder类
+ViewHolder类，继承自RecyclerView.ViewHolder，需要View进行初始化。在ViewHolder类具体处理根视图下的详细子试图
+```kotlin
+class MyViewHolder(view: View): RecyclerView.ViewHolder(view){
+    val hintName: TextView = itemView.findViewById(R.id.hintName)
+    val hintPhone: TextView = itemView.findViewById(R.id.hintPhone)
+    val changeButton: Button = itemView.findViewById(R.id.changeButton)
+}
+```
+Adapter类，继承自RecyclerView.Adapter<T>，需要数据集进行初始化，在类内需要重写`onCreateViewHolder`,`onBindViewHolder`,`getItemCount`,这三个函数(父类纯虚)。
+```kotlin
+class MyAdapter(private val dataList: List<Person>): RecyclerView.Adapter<MyViewHolder>(){
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
+        // 创建View Holder，及关联View
+        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item, parent, false)
+        return MyViewHolder(itemView)
+    }
+    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        val currentItem = dataList[position]
+        holder.hintName.text= currentItem.name
+        holder.hintPhone.text = currentItem.phone
+    }
+
+    override fun getItemCount(): Int {
+        return dataList.size
+    }
+}
+```
+3.主页面调用
+```kotlin
+val dataList: List<Person> = listOf(
+    Person("a", "123"),
+    Person("b", "456"),
+    Person("c", "789"),
+)
+val adapter = MyAdapter(dataList)
+recycler.adapter = adapter
+```
+
 ## 5.小demo
 ### 5.1.完成一个「名片展示 App」：包含顶部头像、姓名、简介
 <img width="213" height="173" alt="image" src="https://github.com/user-attachments/assets/423094b1-79e2-4786-8cbd-bfdce8d0c48a" />
+### 5.2.写一个「联系人列表 Demo」：用RecyclerView 展示一组名字，点击后弹 Toast 提示。
 
 ## 6.遇到的问题
 ### 6.1.重启Android Studio后，遇到build.gradle.kts报错
