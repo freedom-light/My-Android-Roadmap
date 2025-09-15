@@ -253,6 +253,7 @@ kotlin明确将可空性作为其类型系统的一部分，这意味着你可�
 扁平化不是要完全消除嵌套，而是消除那些不必要的、只起包装作用的中间视图容器。
 
 ## 4.RecyclerView
+### 4.1.RecyclerView概念
 为一个功能强大且灵活的视图容器，可以用其高效的显示大量数据，列表项滚动出屏幕时，RecyclerView不会销毁它，而是放入回收池中等待复用，他的设计基于几个关键的概念。
 | 名字                 | 功能                                                                                                                              |
 | :------------------- | :-------------------------------------------------------------------------------------------------------------------------------- |
@@ -263,17 +264,32 @@ kotlin明确将可空性作为其类型系统的一部分，这意味着你可�
 | ItemDecoration       | 负责绘制列表项之间的分割线、高亮、偏移。                                                                                            |
 | ItemAnimator         | 负责处理列表项的动画效果，如当数据被添加、删除、移动时，项的出现/消失动画，默认提供简单的动画效果。                                       |
 
-实现RecyclerView的基本步骤。
+在使用Recycler之前先熟悉一下它的各组件之间关系。
+`RecyclerView，Dataset，Adapter，ViewHolder，Item`
+**一个ViewHolder对应一个Item，一个Adapter负责管理所有View Holder并bind Dataset中的一条数据到一个View Holder中。**
+手机屏幕一次只能显示有限数量的项目，例如一次只能显示五条，RecyclerView只会创建略多于这个数量的ViewHolder，例如6,7个。之后循环使用。
+
+### 4.2.使用RecyclerView步骤
+实现RecyclerView的基本步骤
 1. 确定列表/网格的外观，一般来说，可以使用RecyclerView库的某个标准布局管理器。
 2. 设计列表中每个元素的外观和列表。根据设计扩展ViewHolder类。
 3. 定义用于将您的数据与 ViewHolder 视图相关联的 Adapter。
-定义适配器时需要替换三个关键方法：
-onCreateViewHolder()
-LayoutInflater,是一个系统类，负责XML布局转换为实际的view对象
-LayoutInflater.from(parent.context)，获取父容器上下文
-.inflate(R.layout.item_layout, parent, false)
-onBindViewHolder()
-getItemCount()
+此外，您还可以使用高级自定义选项根据自己的具体需求定制 RecyclerView。如设计状态改变动画，布局管理等。
+#### 4.2.1.规划布局
+RecyclerView 中的列表项由 LayoutManager 类负责排列。RecyclerView 库提供了三种布局管理器，用于处理最常见的布局情况：
+* `LinearLayoutManager` 将各个项排列在一维列表中。
+* `GridLayoutManager` 将各个项排列在二维网格中
+  * 如果网格垂直排列，`GridLayoutManager` 会尽量使每行中所有元素的宽度和高度相同，但不同的行可以有不同的高度。
+  * 如果网格水平排列，`GridLayoutManager` 会尽量使每列中所有元素的宽度和高度相同，但不同的列可以有不同的宽度。
+* StaggeredGridLayoutManager 与 GridLayoutManager 类似，但不要求同一行中的列表项具有相同的高度（垂直网格有此要求）或同一列中的列表项具有相同的宽度（水平网格有此要求）。其结果是，同一行或同一列中的列表项可能会错落不齐。
+
+#### 4.2.2.实现适配器和View Holder
+确定布局后，您需要实现 **Adapter** 和 **ViewHolder**。这两个类配合使用，共同定义数据的显示方式。ViewHolder 是包含列表中各列表项的布局的 View 的封装容器。Adapter 会根据需要创建 ViewHolder 对象，还会为这些视图设置数据。将视图与其数据相关联的过程称为“绑定”。
+
+定义适配器时，您需要替换三个关键方法：
+* `onCreateViewHolder()`：每当 RecyclerView 需要创建新的 ViewHolder 时，它都会调用此方法。此方法会创建并初始化 ViewHolder 及其关联的 View，但不会填充视图的内容，因为 ViewHolder 此时尚未绑定到具体数据。
+* `onBindViewHolder()`：RecyclerView 调用此方法将 ViewHolder 与数据相关联。此方法会提取适当的数据，并使用该数据填充 ViewHolder 的布局。例如，如果 RecyclerView 显示的是一个名称列表，该方法可能会在列表中查找适当的名称，并填充 ViewHolder 的 TextView widget。
+* `getItemCount()`：RecyclerView 调用此方法来获取数据集的大小。例如，在通讯簿应用中，这可能是地址总数。 RecyclerView 使用此方法来确定什么时候没有更多的列表项可以显示。
 
 ## 5.小demo
 ### 5.1.完成一个「名片展示 App」：包含顶部头像、姓名、简介
