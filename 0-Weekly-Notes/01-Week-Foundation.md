@@ -3,7 +3,7 @@
 
 <img width="238" height="195" alt="image" src="https://github.com/user-attachments/assets/26de01eb-fac6-475f-9d55-4f026f75d86c" />
 
-新建项目时选择Empty Views Activity，而不是Empty Activity（compose项目)
+新建项目时先选择Empty Views Activity，而不是Empty Activity（compose项目)，先熟悉如何使用传统的View系统模式，代码与XML分离。
 
 <img width="122" height="270" alt="image" src="https://github.com/user-attachments/assets/3c4e7908-e4d2-4d8c-a1e5-113627821fb3" />
 
@@ -16,16 +16,20 @@ Android 系统的 API 级别（API Level） 列表，每一个 API 级别对�
 这是 Android 项目中 构建脚本（Build Script）的两种 DSL（领域特定语言）选择，用于配置项目的构建逻辑
 <img width="415" height="60" alt="image" src="https://github.com/user-attachments/assets/54ca0b91-6632-4c85-9248-83f1c4fd84f4" />
 
-在选择完项目后，切换为Project Files视图模式
-在gradle文件夹中的gradle-wrapper.properties文件中，将路径改为国内的镜像源，可以提高下载速度。
+选择完项目后，在**gradle-wrapper.properties**文件中，可以将路径改为国内的镜像源，可以提高下载速度。
 ```kotlin
 distributionUrl=https\://mirrors.cloud.tencent.com/gradle/gradle-8.13-bin.zip
 ```
-修改完url之后点击大象图标重新同步一下<img width="33" height="60" alt="image" src="https://github.com/user-attachments/assets/82b81f6e-a887-4fab-a413-df1ba06846bb" />
-在屏幕的右上角
-
-<img width="289" height="214" alt="image" src="https://github.com/user-attachments/assets/4b6b618b-4867-489b-b4b8-6899400f1619" />
-<img width="415" height="105" alt="image" src="https://github.com/user-attachments/assets/c3009afa-e41c-4911-a024-28992e7c208c" />
+```kotlin
+#Fpi Aug 22 01:17:32 CST 2025
+distributionBase=GRADLE_USER_HOME
+distributionPath=wrapper/dists
+#distributionUrl=https://services.gradle.org/distributions/gradle-8.13-bin.zip
+distributionUrl=https://mirrors.cloud.tencent.com/gradle/gradle-8.13-bin.zip
+zipStoreBase=GRADLE_USER_HOME
+zipStorePath=wrapper/dists
+```
+修改完url之后重新同步一下，`File -> Sync Project With Gradle Files`
 
 ### 2.1. Android项目结构
 
