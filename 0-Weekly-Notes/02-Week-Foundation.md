@@ -307,6 +307,7 @@ class MyViewHolder(view: View): RecyclerView.ViewHolder(view){
 }
 ```
 Adapter类，继承自RecyclerView.Adapter<T>，需要数据集进行初始化，在类内需要重写`onCreateViewHolder`,`onBindViewHolder`,`getItemCount`,这三个函数(父类纯虚)。
+
 ```kotlin
 class MyAdapter(private val dataList: List<Person>): RecyclerView.Adapter<MyViewHolder>(){
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -325,6 +326,13 @@ class MyAdapter(private val dataList: List<Person>): RecyclerView.Adapter<MyView
     }
 }
 ```
+`LayoutInflater`是一个类，用于将XML布局文件转换成对于的View对象
+
+`inflate`函数的三个参数：
+* R.layout.item要加载的XML布局资源
+* 新视图将要被添加到的父视图
+* 是否要立即添加到父视图
+
 3.主页面调用
 ```kotlin
 val dataList: List<Person> = listOf(
