@@ -237,7 +237,13 @@ Glide.with(holder.itemView.context)
     .into(holder.image)
 ```
 ```kotlin
+[versions]
+glide = "4.16.0"
 
+[libraries]
+androidx-glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
+
+implementation(libs.androidx.glide)
 ```
 
 ## 7.收获经验/优化点
