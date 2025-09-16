@@ -209,14 +209,34 @@ Computer gamingComputer = new Computer.ComputerBuilder("Intel i9", "32GB")
 
 ## 4.了解 ViewModel + LiveData 基本用法
 
-## 5.遇到的问题
-### 5.1.androidTestImplementation引入后无法使用库
-androidTestImplementation 用于引入那些需要在 Android 设备上运行的测试依赖。需要注意对于主应用程序要使用的部分，要使用implementation，使用androidTestImplementation 在import引入库的时候，无法成功。
-由此可见，retrofit库已经成功引入了。
-<img width="633" height="750" alt="image" src="https://github.com/user-attachments/assets/2188c50a-6e44-4b4f-bf70-e72c1adecf07" />
+## 5.Demo
+### 5.1.改造 TodoList：用 Room 保存任务数据
 
 
-## 6.收获经验/优化点
+### 5.2.做一个「新闻阅读 App Demo」： 首页列表（通过 Retrofit 获取数据），点击条目进入详情页，收藏功能（用Room保存收藏状态）
+通过Retrofit+Gson+OkHttpClient完成从网址中GET数据并转为数据类对象的操作，之后使用RecyclerView进行列表展示。
+
+## 6.遇到的问题
+### 6.1.androidTestImplementation引入后无法使用库
+androidTestImplementation 用于引入那些需要在 Android 设备上运行的测试依赖。需要注意对于主应用程序要使用的部分，要使用implementation，使用androidTestImplementation 在import引入库的时候，无法成功。可以通过Project -> 在左边列表搜索库名 的方式观察库是否成功载入。
+
+### 6.2.数据类中picUrl是String类型，imageView不能直接使用picUrl赋值
+可以使用Glide解决，Glide是Android图片加载和缓存库，可以帮助用简短的代码完成从各种来源加载图片并显示到ImageView中。
+
+Glide的实用功能
+```kotlin
+Glide.with(holder.itemView.context)
+    .load(currentItem.picUrl)
+    .placeholder(R.drawable.ic_loading)    // 加载中显示的图片
+    .error(R.drawable.ic_error)            // 加载失败显示的图片
+    .override(300, 200)                    // 指定图片尺寸
+    .centerCrop()                          // 图片裁剪方式
+    .circleCrop()                          // 圆形图片
+    .into(holder.image)
+```
+
+
+## 7.收获经验/优化点
 * 改架构然后监听状态，
 * 格式化管理，new -> package
 * 不要信任服务端的数据，进行空校验，或者赋值为可空，不然调用空对象，会崩要避免API字段返回null导致的解析崩溃
