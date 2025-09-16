@@ -120,6 +120,22 @@ AAPT2会收集所有资源文件中的所有资源，为每个资源分配一个
 | R.drawable     | 包含了所有 drawable 资源的 ID       |
 | R.color        | 包含了所有资源颜色的 ID             |
 
+### 2.4.onCreate函数
+super是Java/Kotlin的一个关键字，代指**当前类的直接父类**
+onCreate
+```kotlin
+override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    enableEdgeToEdge()
+    setContentView(R.layout.activity_main)
+    // 确保你的应用内容不会被系统的 UI（如状态栏、导航栏）遮挡
+    ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+        val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+        v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+        insets
+    }
+```
+
 ## 3.学习前准备（Android XML）
 认识Android XML常见的关键字
 
