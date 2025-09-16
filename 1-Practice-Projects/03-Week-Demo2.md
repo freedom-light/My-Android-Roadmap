@@ -2,130 +2,130 @@
 ```kotlin
 package com.example.a03_week_demo2
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.a03_week_demo2.com.example.a03_week_demo2.data.NewsItem
 import kotlinx.coroutines.launch
 
-// 如果你用了 RecyclerView，需要导入相关类（示例中先简化用 Toast/Log 展示）
-// import androidx.recyclerview.widget.LinearLayoutManager
-// import androidx.recyclerview.widget.RecyclerView
-
 class MainActivity : AppCompatActivity() {
-    // 1. 声明 UI 控件（根据你的 activity_main.xml 布局调整，这里示例常用控件）
-    // private lateinit var rvNews: RecyclerView // 新闻列表RecyclerView
-    // private lateinit var progressBar: View     // 加载进度条
-    // private lateinit var tvError: View         // 错误提示文本
 
-    // 2. 新闻列表数据（用于后续 UI 展示）
-    private var newsDataList: List<NewsItem> = emptyList()
+    companion object {
+        private const val TAG = "MainActivity"
+    }
+
+    private var dataList: List<NewsItem> = emptyList()
+    private lateinit var recyclerView: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // 加载布局（确保 activity_main.xml 存在对应控件）
+        enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
-        // 3. 绑定 UI 控件（根据你的布局ID修改，示例ID仅参考）
-        // progressBar = findViewById(R.id.progress_bar)
-        // tvError = findViewById(R.id.tv_error)
-        // rvNews = findViewById(R.id.rv_news)
+        // 确保你的应用内容不会被系统的 UI（如状态栏、导航栏）遮挡
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
 
-        // 4. 初始化 RecyclerView（如果用了列表展示，没用到可删除这部分）
-        // initRecyclerView()
+        recyclerView = findViewById(R.id.recyclerView)
 
-        // 5. 启动网络请求加载新闻数据
+        // 启动网络请求，加载UI数据
         loadNewsData()
     }
-
-    /**
-     * 初始化 RecyclerView（列表展示用，没用到可删除）
-     */
-    // private fun initRecyclerView() {
-    //     rvNews.layoutManager = LinearLayoutManager(this)
-    //     // 后续获取数据后设置适配器：rvNews.adapter = NewsAdapter(newsDataList)
-    // }
-
-    /**
-     * 核心：发起网络请求获取新闻数据
-     */
-    private fun loadNewsData() {
-        // 切换到协程（lifecycleScope 自动绑定Activity生命周期，避免内存泄漏）
+    // 发起网络请求，获取新闻数据
+    fun loadNewsData(){
         lifecycleScope.launch {
-            try {
-                // 1. 显示加载状态（让用户知道在加载）
-                // progressBar.visibility = View.VISIBLE
-                // tvError.visibility = View.GONE // 隐藏错误提示
-                Log.d("MainActivity", "开始加载新闻数据...")
+            val response: ApiResponse = RetrofitClient.newsApiService.getNewsList()
+            // 处理API响应，code == 200 代表成功
+            if(response.code == 200){
+                dataList = response.result.newsList
 
-                // 2. 调用 Retrofit 接口请求数据（直接用你配置的默认参数 key/num）
-                val response: ApiResponse = RetrofitClient.newsApiService.getNewsList()
-
-                // 3. 处理 API 响应（关键：按你的 ApiResponse 结构解析）
-                if (response.code == 200) { // 假设 code=200 代表请求成功
-                    // 从 ApiResponse -> NewsResult -> newsList 拿到最终新闻列表
-                    newsDataList = response.result.newsList
-
-                    // 打印日志确认数据（方便调试）
-                    Log.d("MainActivity", "请求成功！共获取 ${newsDataList.size} 条新闻")
-                    newsDataList.forEachIndexed { index, item ->
-                        Log.d("NewsItem-$index", "标题：${item.title} | 来源：${item.source}")
-                    }
-
-                    // 4. 更新 UI 展示数据（必须在主线程，runOnUiThread 确保主线程执行）
-                    runOnUiThread {
-                        // 隐藏加载进度
-                        // progressBar.visibility = View.GONE
-
-                        // 情况1：如果用 RecyclerView 展示列表
-                        // rvNews.adapter = NewsAdapter(newsDataList) // 需自己实现 NewsAdapter
-
-                        // 情况2：简化用 Toast 提示结果（没做列表时先用这个验证）
-                        Toast.makeText(
-                            this@MainActivity,
-                            "加载成功！共 ${newsDataList.size} 条新闻",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-
-                } else {
-                    // API 返回错误（比如 code≠200，按你的 msg 提示）
-                    val errorMsg = "API错误：${response.msg}（错误码：${response.code}）"
-                    Log.e("MainActivity", errorMsg)
-                    showErrorUI(errorMsg) // 显示错误UI
+                // 打印日志输出信息
+                Log.d(TAG, "请求成功！共获取 ${dataList.size} 条新闻")
+                dataList.forEachIndexed { index, item ->
+                    Log.d(TAG, "NewsItem-$index 标题：${item.title} | 来源：${item.source} | 图片：${item.picUrl}")
                 }
-
-            } catch (e: Exception) {
-                // 5. 处理网络异常（比如没网、超时、解析错误等）
-                val errorMsg = "网络请求失败：${e.message ?: "未知错误"}"
-                Log.e("MainActivity", errorMsg, e) // 打印异常堆栈，方便调试
-                showErrorUI(errorMsg) // 显示错误UI
-
-            } finally {
-                // 6. 最终：无论成功/失败，都隐藏加载进度
-                // progressBar.visibility = View.GONE
-                Log.d("MainActivity", "加载流程结束")
+                // 用 RecyclerView 展示列表
+                initRecyclerView(dataList)
             }
         }
     }
 
-    /**
-     * 统一处理错误UI（避免重复代码）
-     */
-    private fun showErrorUI(errorMsg: String) {
-        runOnUiThread {
-            // 显示错误提示，隐藏列表（如果有）
-            // tvError.visibility = View.VISIBLE
-            // tvError.text = errorMsg
-            // rvNews.visibility = View.GONE
+    fun initRecyclerView(dataList: List<NewsItem>){
+        // 初始化列表布局
+        recyclerView.layoutManager = LinearLayoutManager(this)
 
-            // 简化用 Toast 提示错误（没做错误文本时先用这个）
-            Toast.makeText(this@MainActivity, errorMsg, Toast.LENGTH_LONG).show()
-        }
+        // 绑定适配器
+        val adapter = MyAdapter(dataList)
+        recyclerView.adapter = adapter
     }
 }
+
+// ViewHolder类
+class MyHolder(view: View): RecyclerView.ViewHolder(view){
+    val image: ImageView = itemView.findViewById(R.id.imageView)
+    val title: TextView = itemView.findViewById(R.id.hinttitle)
+    val source: TextView = itemView.findViewById(R.id.hintsource)
+    val ctime: TextView = itemView.findViewById(R.id.hintCtime)
+}
+
+// Adapter类
+class MyAdapter(private val dataList: List<NewsItem>): RecyclerView.Adapter<MyHolder>(){
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyHolder {
+        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.newsitem, parent, false)
+        return MyHolder(itemView)
+    }
+
+    override fun onBindViewHolder(holder: MyHolder, position: Int) {
+        val currentItem = dataList[position]
+        if(currentItem.picUrl.isNullOrEmpty()){
+            Glide.with(holder.itemView.context)
+                .load(R.drawable.ic_launcher_background)
+                .into(holder.image)
+        }else{
+            Glide.with(holder.itemView.context)
+                .load(currentItem.picUrl)
+                .placeholder(R.drawable.ic_launcher_background) // 加载中显示的图片
+                .error(R.drawable.ic_launcher_background)        // 加载失败显示的图片
+                .into(holder.image)
+        }
+        holder.title.text = currentItem.title
+        holder.source.text = currentItem.source
+        holder.ctime.text = currentItem.ctime
+        // 为条目添加点击事件，打开对应的新闻链接
+        holder.image.setOnClickListener {
+            if (currentItem.url.isNullOrEmpty()){
+                Toast.makeText(holder.itemView.context, "链接无效", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(currentItem.url))
+            holder.itemView.context.startActivity(intent)
+        }
+        //Log.d("NewItem-${dataList[position].id}","url:${dataList[position].url} | picUrl:${dataList[position].picUrl}")
+    }
+
+    override fun getItemCount(): Int {
+        return dataList.size
+    }
+}
+
 ```
 # AndroidManifest.xml
 ```kotlin
