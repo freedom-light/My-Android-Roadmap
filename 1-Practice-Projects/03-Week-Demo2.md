@@ -291,6 +291,7 @@ android {
 dependencies {
     implementation(libs.kotlinx.coroutines.android)
 
+    implementation(libs.androidx.glide)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -299,11 +300,13 @@ dependencies {
     implementation(libs.androidx.retrofit)
     implementation(libs.androidx.converter.gson)
     implementation(libs.androidx.gson)
+    implementation(libs.androidx.recyclerview)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
 }
+
 ```
 
 # libs.versions.toml
@@ -322,8 +325,10 @@ constraintlayout = "2.2.1"
 
 retrofit = "2.9.0"
 gson = "2.10.1"
-
 coroutinesAndroid = "1.7.3"
+recyclerview = "1.4.0"
+glide = "4.16.0"
+
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -334,12 +339,12 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
-
 androidx-retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 androidx-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
 androidx-gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
-
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutinesAndroid" }
+androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
+androidx-glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
