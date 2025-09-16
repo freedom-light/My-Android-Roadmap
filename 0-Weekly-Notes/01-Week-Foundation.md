@@ -120,9 +120,16 @@ AAPT2会收集所有资源文件中的所有资源，为每个资源分配一个
 | R.drawable     | 包含了所有 drawable 资源的 ID       |
 | R.color        | 包含了所有资源颜色的 ID             |
 
-### 2.4.onCreate函数
-super是Java/Kotlin的一个关键字，代指**当前类的直接父类**
-onCreate
+### 2.4.项目初始化时的onCreate函数
+onCreate是Activity生命周期的第一个函数，会被自动调用，就像构造函数一样。
+`super`是Java/Kotlin的一个关键字，代指**当前类的直接父类**。
+`savedInstanceState`是一个`Bundle`类型的参数，它用于状态恢复，如果是正常启动，这个参数为null。
+
+`enableEdgeToEdge()`的作用是使应用内容可以伸展到屏幕边缘，以获取更沉浸的体验。
+
+`setContentView(R.layout.activity_main)`将对应的XML布局资源文件转化为视图树。
+
+`ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main))`确保你的应用内容不会被系统的 UI（如状态栏、导航栏）遮挡。
 ```kotlin
 override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -134,6 +141,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
         v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
         insets
     }
+}
 ```
 
 ## 3.学习前准备（Android XML）
