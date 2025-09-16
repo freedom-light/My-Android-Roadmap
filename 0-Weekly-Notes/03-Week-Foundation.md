@@ -216,6 +216,8 @@ Computer gamingComputer = new Computer.ComputerBuilder("Intel i9", "32GB")
 ### 5.2.做一个「新闻阅读 App Demo」： 首页列表（通过 Retrofit 获取数据），点击条目进入详情页，收藏功能（用Room保存收藏状态）
 通过Retrofit+Gson+OkHttpClient完成从网址中GET数据并转为数据类对象的操作，之后使用RecyclerView进行列表展示。
 
+优化：现在就像面向过程的编程，把所有内容都写到了main()函数里面，让类符合单一职责原则，一个类负责一类任务，一个接口完成单一功能，转为高内聚低耦合，从而增强代码可。
+
 ## 6.遇到的问题
 ### 6.1.androidTestImplementation引入后无法使用库
 androidTestImplementation 用于引入那些需要在 Android 设备上运行的测试依赖。需要注意对于主应用程序要使用的部分，要使用implementation，使用androidTestImplementation 在import引入库的时候，无法成功。可以通过Project -> 在左边列表搜索库名 的方式观察库是否成功载入。
@@ -234,7 +236,9 @@ Glide.with(holder.itemView.context)
     .circleCrop()                          // 圆形图片
     .into(holder.image)
 ```
+```kotlin
 
+```
 
 ## 7.收获经验/优化点
 * 改架构然后监听状态，
