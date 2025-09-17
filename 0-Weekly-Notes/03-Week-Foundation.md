@@ -207,7 +207,18 @@ Computer gamingComputer = new Computer.ComputerBuilder("Intel i9", "32GB")
 
 ## 3.理解 ViewModel + Flow 基本用法
 常见的Flow有StateFlow和SharedFlow，它们是热数据流，只要该数据流被收集，或对它的任何其他引用在垃圾回收根中存在，该数据流就会一直存于内存中。
+
 ViewModel：提供了一种创建和检索绑定到特定生命周期的对象的方法。它ViewModel通常存储视图数据的状态，并与其他组件（例如数据存储库或处理业务逻辑的领域层）进行通信。主要优点是，它可以缓存状态，并可在配置更改后持久保留相应状态。这意味着在 activity 之间导航时或进行配置更改后（例如旋转屏幕时），界面将无需重新提取数据。
+
+Flow：用于实现数据流。它的角色需要根据其持有者和使用者来判断
+1. 作为状态的持有者：处于ViewModel层，此时StateFlow是状态本身，存储着UI的状态值。
+2. 作为状态的暴露方式：ViewModel->View的桥梁，ViewModel 通过将 MutableStateFlow 转换为公开的 StateFlow，为 UI 层提供了一个只读的、可观察的数据流。
+3. 作为状态的消费者：UI层，在 UI 层，代码会收集这个 StateFlow，对其变化做出反应，并重新绘制UI。
+
+关键特性：ViewModel 不持有任何对View的引用（如Button、TextView对象的引用）。它只提供属性和命令。这保证了它的可测试性，**你可以在没有UI的环境下测试ViewModel的所有逻辑**。
+
+### 3.1.ViewModel使用流程
+
 
 
 ## 4.了解 ViewModel + LiveData 基本用法
@@ -221,7 +232,12 @@ ViewModel：提供了一种创建和检索绑定到特定生命周期的对象�
 
 优化：现在就像面向过程的编程，把所有内容都写到了main()函数里面，让类符合单一职责原则，一个类负责一类任务，一个接口完成单一功能，转为高内聚低耦合，从而增强代码可。
 
-对项目架构进行调整，重构到MVVM架构，主要引入StateFlow和ViewModel
+对项目架构进行调整，重构到MVVM架构，主要引入StateFlow和ViewModel。
+1. 添加ViewModel依赖
+2. 创建NewsViewModel
+3. 修改MainActivity
+4. 修改MyAdapter
+5. 修改MyHolder
 
 
 
