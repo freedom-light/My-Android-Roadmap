@@ -215,6 +215,12 @@ kotlin明确将可空性作为其类型系统的一部分，这意味着你可�
 | dependencies | 声明当前项目（或模块）所依赖的代码库 |
 | plugins | 声明和应用构建插件，这些插件会为项目添加额外的功能、任务和约定 | 
 
+### 1.12.委托关键字 by
+`by`是Kotlin属性委托的语法，含义是将这个属性的setter和getter委托为xxx来处理
+```kotlin
+private val viewModel: NewsViewModel by viewModels()
+```
+
 ## 2.Activity & Fragment 生命周期
 ### 2.1.Activity
 类似于Qt的QMainWindow，主窗口类，应用的主要窗口/界面
