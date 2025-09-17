@@ -206,6 +206,9 @@ Computer gamingComputer = new Computer.ComputerBuilder("Intel i9", "32GB")
 在实际的界面（如 MainActivity）中使用这个配置好的 RetrofitClient 来发起网络请求并处理响应
 
 ## 3.理解 ViewModel + Flow 基本用法
+常见的Flow有StateFlow和SharedFlow，它们是热数据流，只要该数据流被收集，或对它的任何其他引用在垃圾回收根中存在，该数据流就会一直存于内存中。
+ViewModel：提供了一种创建和检索绑定到特定生命周期的对象的方法。它ViewModel通常存储视图数据的状态，并与其他组件（例如数据存储库或处理业务逻辑的领域层）进行通信。主要优点是，它可以缓存状态，并可在配置更改后持久保留相应状态。这意味着在 activity 之间导航时或进行配置更改后（例如旋转屏幕时），界面将无需重新提取数据。
+
 
 ## 4.了解 ViewModel + LiveData 基本用法
 
@@ -217,6 +220,10 @@ Computer gamingComputer = new Computer.ComputerBuilder("Intel i9", "32GB")
 通过Retrofit+Gson+OkHttpClient完成从网址中GET数据并转为数据类对象的操作，之后使用RecyclerView进行列表展示。
 
 优化：现在就像面向过程的编程，把所有内容都写到了main()函数里面，让类符合单一职责原则，一个类负责一类任务，一个接口完成单一功能，转为高内聚低耦合，从而增强代码可。
+
+对项目架构进行调整，重构到MVVM架构，主要引入StateFlow和ViewModel
+
+
 
 ## 6.遇到的问题
 ### 6.1.androidTestImplementation引入后无法使用库
