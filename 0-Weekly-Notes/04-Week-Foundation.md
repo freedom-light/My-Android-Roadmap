@@ -4,7 +4,11 @@ MVVM架构，Model - View - ViewModel，是一种架构模式，核心思想是`
 1. Model：数据层只负责数据的获取与存储，对外提供数据接口。
 2. ViewModel：处理业务逻辑并提供 View 所需的数据，暴露可观察数据给View
 3. View：仅根据数据进行展示，并响应用户UI交互
+### 1.1.Model 数据层
+#### 1.1.1.Repository
 
+### 1.2.ViewModel 中间层
+### 1.3.View UI层
 ## 2.Kotlin 协程（Coroutines）和 Flow
 ### 2.1.协程(Coroutines)
 协程可以被认为是轻量级的线程，协程不绑定到特殊线程，可以在一个线程中暂停协程，然后在另一个线程中恢复。
