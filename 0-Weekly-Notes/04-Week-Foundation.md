@@ -32,13 +32,90 @@ delay(1000L) // 非阻塞延迟1秒 (default time unit is ms)
 
 协程遵循结构化并发原则，相比于C++中实现多线程异步执行，Android里的协程使用起来有以下四点优势
 1. 父子层级关系
+```kotlin
+// 父协程
+val parentJob = CoroutineScope(Dispatchers.Main).launch {
+    // 子协程1
+    launch { 
+        delay(1000)
+        println("子任务1完成")
+    }
+    
+    // 子协程2  
+    launch {
+        delay(2000)
+        println("子任务2完成")
+    }
+}
 
+// 结构：
+// parentJob
+//   ├── 子协程1
+//   └── 子协程2
+```
 2. 自动传播取消
+```kotlin
+val parentJob = CoroutineScope(Dispatchers.Main).launch {
+    val child1 = launch { 
+        delay(5000) // 需要5秒
+        println("这行不会执行")
+    }
+    
+    val child2 = launch {
+        delay(1000)
+        println("子任务2完成")
+    }
+}
 
+// 2秒后取消父协程
+delay(2000)
+parentJob.cancel() // 自动取消所有子协程！
+
+// 输出：只有"子任务2完成"，child1被自动取消了
+```
 3. 自动等待完成
+```kotlin
+val parentJob = CoroutineScope(Dispatchers.Main).launch {
+    val child1 = launch { 
+        delay(1000)
+        println("子任务1完成")
+    }
+    
+    val child2 = launch {
+        delay(2000) 
+        println("子任务2完成")
+    }
+    
+    // 父协程会自动等待所有子协程完成
+    println("所有子任务完成后再执行这里")
+}
 
+// 输出：
+// 子任务1完成
+// 子任务2完成  
+// 所有子任务完成后再执行这里
+```
 4. 自动传播异常
+```kotlin
+val parentJob = CoroutineScope(Dispatchers.Main).launch {
+    launch {
+        delay(1000)
+        throw RuntimeException("子协程出错了！")
+    }
+    
+    launch {
+        delay(2000)
+        println("这行不会执行")
+    }
+}
 
+// 子协程的异常会自动传播给父协程
+// 父协程会取消所有其他子协程
+```
+解决了传统方式启动许多线程导致的
+1. 无法统一取消
+2. 可能内存泄漏
+3. 异常处理困难
 
 ### 2.2.Flow
 
