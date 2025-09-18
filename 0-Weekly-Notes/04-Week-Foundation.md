@@ -6,7 +6,7 @@ MVVM架构，Model - View - ViewModel，是一种架构模式，核心思想是`
 3. View：仅根据数据进行展示，并响应用户UI交互
 ### 1.1.Model 数据层
 #### 1.1.1.Repository
-
+Repository(数据仓库)核心职责是对外提供统一的数据访问接口。
 ### 1.2.ViewModel 中间层
 ### 1.3.View UI层
 ## 2.Kotlin 协程（Coroutines）和 Flow
