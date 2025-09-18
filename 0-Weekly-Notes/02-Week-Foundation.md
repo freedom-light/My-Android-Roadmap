@@ -225,25 +225,26 @@ private val viewModel: NewsViewModel by viewModels()
 ### 2.1.Activity
 类似于Qt的QMainWindow，主窗口类，应用的主要窗口/界面
 
-| Activity 生命周期 | 与 Qt QMainWindow 类比 | 功能描述                                   |
-| :---------------- | :--------------------- | :----------------------------------------- |
-| onCreate          | 构造函数               | 构造函数+初始化UI，仅调用一次                |
-| onStart           | show()                 | 显示窗口                                   |
-| onResume          | 获得焦点               | 获得焦点，窗口激活，可交互                   |
-| onPause           | 失去焦点               | 失去焦点                                   |
-| onStop            | hide()                 | 隐藏窗口                                   |
-| onDestroy         | 析构函数               | 析构函数，清理资源                           |
+| Activity 生命周期 | 与 Qt QMainWindow 类比 | 功能描述                            |
+| :---------------- | :--------------------- | :------------------------------- |
+| onCreate          | 构造函数                | 构造函数+初始化UI，仅调用一次        |
+| onStart           | show()                 | 显示窗口                          |
+| onResume          | 获得焦点                | 获得焦点，窗口激活，可交互           |
+| onPause           | 失去焦点                | 失去焦点                          |
+| onStop            | hide()                 | 隐藏窗口                          |
+| onRestart         |                        | 使处于已停止状态的Activity恢复      |
+| onDestroy         | 析构函数                | 析构函数，清理资源                  |
 
 ### 2.2.Fragment
 类似于Qt中的控件如QWidget，QDialog
-| Fragment 生命周期 | 与 Qt 中控件类比       | 功能描述                     |
-| :---------------- | :--------------------- | :--------------------------- |
-| onCreate          | 构造函数               | 初始化数据非UI相关组件         |
-| onCreateView      | 将控件添加到布局       | 创建准备UI                   |
-| onStart           | show()                 | 显示窗口                     |
-| onResume          | 获得焦点               | 窗口激活，可以交互           |
-| onDestroyView     | 从布局移除但对象还在   | UI销毁但对象还在             |
-| onDestroy         | 析构函数               | 完全销毁，清理资源           |
+| Fragment 生命周期 | 与 Qt 中控件类比          | 功能描述                 |
+| :---------------- | :--------------------- | :---------------------- |
+| onCreate          | 构造函数                | 初始化数据非UI相关组件     |
+| onCreateView      | 将控件添加到布局         | 创建准备UI               |
+| onStart           | show()                 | 显示窗口                 |
+| onResume          | 获得焦点                | 窗口激活，可以交互         |
+| onDestroyView     | 从布局移除但对象还在      | UI销毁但对象还在          |
+| onDestroy         | 析构函数                | 完全销毁，清理资源         |
 
 ## 3.常见布局（LinearLayout、ConstraintLayout）
 ### 3.1.LinearLayout(线性布局)
