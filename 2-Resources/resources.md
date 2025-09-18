@@ -14,3 +14,7 @@ activity
 ```
 https://developer.android.com/guide/components/activities/intro-activities?hl=zh-cn
 ```
+在 Android 应用中使用 Hilt
+```
+https://developer.android.com/codelabs/android-hilt?hl=zh-cn#0
+```
