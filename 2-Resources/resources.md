@@ -6,3 +6,7 @@ Kotlin官方入门文档：https://kotlinlang.org/docs/getting-started.html
 ```
 https://developer.android.com/training/dependency-injection/manual?hl=zh-cn
 ```
+activity
+```
+https://developer.android.com/guide/components/activities/intro-activities?hl=zh-cn
+```
