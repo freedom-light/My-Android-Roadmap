@@ -124,6 +124,25 @@ val parentJob = CoroutineScope(Dispatchers.Main).launch {
 ### 2.2.Flow
 
 ## 3.依赖注入(Hilt)
+### 3.1.手动依赖注入
+Android推荐的应用架构推荐将代码划分为多个类，以达到**分离关注点**。这就需要将更多更小的类连接到一起，以实现彼此之间的依赖关系。
+<img width="960" height="720" alt="image" src="https://github.com/user-attachments/assets/e1569f42-6289-474c-86a8-31de26d40477" />
+
+每个类都连接到其所依赖的类形成连接，依赖注入有助于建立这种连接，从而方便更换实现以进行测试。
+
+将流程视为应用中与某项功能相对于的一组画面，例如登陆流程，LoginActivity是登陆流程的入口点，用户与activity进行交互，因此，LoginActivity 需要创建 LoginViewModel 及其所有依赖项。
+<img width="1705" height="726" alt="image" src="https://github.com/user-attachments/assets/2e8b7be2-98ac-4492-b106-51f9387fea95" />
+
+迭代
+* 使用传统的方式
+  * 存在大量的样板代码，需要在另一部分使用时，需要使用重复代码
+  * 必须按顺序声明依赖项，底层的创建出来后，上层的才可以创建
+  * 很难重复使用对象，如需重复使用则要使用单例模式，但单例使测试变得困难(所有测试共享相同的实例)
+* 使用容器管理代码，将重复的部分写为工厂方法
+  * 必须自行管理 AppContainer，手动为所有依赖项创建实例。
+  * 仍然有大量样板代码。需要手动创建工厂或参数，具体取决于是否要重复使用某个对象。
+* 管理应用流程中的依赖项，流程开始时创建，流程结束时销毁，如可以用activity管理容器的生命周期，onCreate中创建，onDestroy中销毁(使用生命周期观察)
+
 
 ## Navigation 组件（多页面跳转）
 
