@@ -176,6 +176,9 @@ kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ```
 
+#### 3.2.2.使用Hilt流程
+1. @HiltAndroidApp：标志应用的入口点，让Hilt能够开始工作
+
 ## 4.Navigation 组件（多页面跳转）
 
 
