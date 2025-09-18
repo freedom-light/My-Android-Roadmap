@@ -145,6 +145,36 @@ Android推荐的应用架构推荐将代码划分为多个类，以达到**分�
 
 ### 3.2.使用Hilt作为依赖项注入工具，自动管理依赖项
 手动依赖项注入要求您手动构造每个类及其依赖项，并借助容器来重复使用和管理依赖项。
+#### 3.2.1.在项目中配置Hilt
+project build gradle
+```kotlin
+alias(libs.plugins.kotlin.kapt) apply false
+alias(libs.plugins.hilt.android) apply false
+```
+Module buile gradle
+```kotlin
+alias(libs.plugins.kotlin.kapt)
+alias(libs.plugins.hilt.android)
+
+implementation(libs.hilt.android)
+kapt(libs.hilt.compiler)
+implementation(libs.hilt.navigation.fragment)
+```
+libs.versions.toml
+```kotlin
+[versions]
+hilt = "2.48.1"
+hiltNavigation = "1.0.0"
+
+[libraries]
+hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
+hilt-navigation-fragment = { group = "androidx.hilt", name = "hilt-navigation-fragment", version.ref = "hiltNavigation" }
+
+[plugins]
+kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+```
 
 ## 4.Navigation 组件（多页面跳转）
 
