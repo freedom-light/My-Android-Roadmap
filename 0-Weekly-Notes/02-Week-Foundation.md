@@ -115,7 +115,7 @@ fun add(a: Int, b: Int) = {a+b}
 1. getter（获取器）：读取属性值，val和var都有，控制对外显示什么
 2. setter（设置器）：修改属性值，只有var有，控制值如何被修改
 
-### 1.5.创建类与实例
+### 1.5.类与实例
 在kotlin中所有类都继承于Any类，Any是所有类的超类（父类）
 
 Any默认提供三个函数：
@@ -145,6 +145,21 @@ constructor(标识符: 类型, ...) : super(值, ...)
 #### 1.5.1.data关键字
 用于创建DTO/POJO/POCO（Data Transfer Object）
 data关键字用于修饰一个类，告诉Kotlin编译器，这个类是**专门用来保存数据的**，为我自动生成一些标准的功能。
+#### 1.5.2.sealed关键字
+Kotlin中用于定义**密封类**的关键字。
+密封类：
+1. 子类必须在同一文件中
+2. 不能直接实例化密封类本身
+3. 所有子类在编译时已知
+
+实际上是语法糖🍬：允许在类体内定义子类，即使父类"尚未完成定义"
+```kotlin
+sealed class UiState {
+    object Loading : UiState()
+    data class Success(val newsList: List<NewsItem>) : UiState()
+    data class Error(val message: String) : UiState()
+}
+```
 
 ### 1.6.重写
 #### 1.6.1.函数重写
