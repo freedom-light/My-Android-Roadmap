@@ -233,7 +233,14 @@ dependencies{
 }
 ```
 2. 创建 ViewModel 类
-
+    1. 密封类定义UI状态
+    2. 通过使用Flow进行状态管理
+```kotlin
+// 私有可变的StateFlow
+private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
+// 对外暴露只读的StateFlow
+val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+``` 
 3. 在 Activity 或 Fragment 中获取 ViewModel 实例
 4. 观察数据变化并更新 UI
 5. 处理配置变更
