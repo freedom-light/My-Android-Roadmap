@@ -218,7 +218,7 @@ Flow：用于实现数据流。它的角色需要根据其持有者和使用者�
 关键特性：ViewModel 不持有任何对View的引用（如Button、TextView对象的引用）。它只提供属性和命令。这保证了它的可测试性，**你可以在没有UI的环境下测试ViewModel的所有逻辑**。
 
 ### 3.1.ViewModel使用流程
-1. 引入依赖
+#### 3.1.1.引入依赖
 ```kotlin
 [versions]
 lifecycle = "2.8.2"
@@ -232,19 +232,43 @@ dependencies{
     implementation(libs.androidx.lifecycle.runtime.ktx)
 }
 ```
-2. 创建 ViewModel 类
-    1. 密封类定义UI状态
-    2. 通过使用Flow进行状态管理
+#### 3.1.2.创建 ViewModel 类
+密封类定义UI状态
+```kotlin
+sealed class UiState {
+    object Loading : UiState()
+    data class Success(val newsList: List<NewsItem>) : UiState()
+    data class Error(val message: String) : UiState()
+}
+```
+通过使用Flow进行状态管理，声明一个私有不可变的引用，引用对象是一个可变的StateFlow，<UiState>泛型参数指定流中数据的类型。
+
+_uiState.asStateFlow()是一个转换方法，将可变的转为只读的StateFlow，外部只能消费不能修改。
 ```kotlin
 // 私有可变的StateFlow
 private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
 // 对外暴露只读的StateFlow
 val uiState: StateFlow<UiState> = _uiState.asStateFlow()
-``` 
-3. 在 Activity 或 Fragment 中获取 ViewModel 实例
-4. 观察数据变化并更新 UI
-5. 处理配置变更
+```
+调用Model层接口，获取数据。
 
+Exception是所有异常(程序级别)的基类，这里捕获的是所有继承自Exception的异常。
+```kotlin
+fun loadNews() {
+    viewModelScope.launch {
+        _uiState.value = UiState.Loading
+        try {
+            val newsList = NewsRepositoryImpl.create().getNewsList()
+            _uiState.value = UiState.Success(newsList)
+        } catch (e: Exception) {
+            _uiState.value = UiState.Error("网络错误: ${e.message}")
+        }
+    }
+}
+```
+#### 3.1.3.在 Activity 或 Fragment 中获取 ViewModel 实例
+#### 3.1.4.观察数据变化并更新 UI
+#### 3.1.5.处理配置变更
 
 
 ## 4.了解 ViewModel + LiveData 基本用法
