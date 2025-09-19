@@ -235,6 +235,26 @@ kotlin明确将可空性作为其类型系统的一部分，这意味着你可�
 ```kotlin
 private val viewModel: NewsViewModel by viewModels()
 ```
+### 1.13.try-catch异常处理
+try尝试执行一段可能会抛出异常的代码，如果确实发生了异常，则用catch捕获，并进行处理，避免程序崩溃，最后还可以使用finally(可选)块执行无论如何都要执行的清理代码。
+
+**注意**：捕获异常的顺序应该是从，具体 -> 一般
+```kotlin
+fun writeToFile(filename: String, text: String) {
+    val writer = FileWriter(filename)
+    try {
+        writer.write(text) // 尝试写入，可能会失败
+        println("写入成功")
+    } catch (e: IOException) {
+        println("写入失败: ${e.message}")
+    } finally {
+        // 无论写入成功还是失败，都必须关闭文件流，释放资源
+        writer.close()
+        println("文件流已关闭")
+    }
+}
+```
+
 
 ## 2.Activity & Fragment 生命周期
 ### 2.1.Activity
