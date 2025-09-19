@@ -6,6 +6,7 @@ package com.example.a03_week_demo2.com.example.a03_week_demo2.View
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -53,18 +54,25 @@ class MainActivity : AppCompatActivity() {
         binding.recyclerView.adapter = adapter
     }
 
-    private fun observeViewModel() {
-        lifecycleScope.launch {
+    private fun observeViewModel(){
+        lifecycleScope.launch{
             viewModel.uiState.collect { state ->
-                when (state) {
+                when(state){
                     is NewsViewModel.UiState.Loading -> {
-                        // 可以显示加载进度条
+                        // 显示加载过程
+                        binding.progressBar.visibility = View.VISIBLE
                     }
                     is NewsViewModel.UiState.Success -> {
+                        // 隐藏加载过程
+                        binding.progressBar.visibility = View.GONE
+                        // 更新数据
                         adapter.updateData(state.newsList)
                     }
                     is NewsViewModel.UiState.Error -> {
-                        Toast.makeText(this@MainActivity, state.message, Toast.LENGTH_SHORT).show()
+                        // 隐藏加载过程
+                        binding.progressBar.visibility = View.GONE
+                        // 短暂
+                        Toast.makeText(this@MainActivity, state.message,Toast.LENGTH_SHORT).show()
                     }
                 }
             }
