@@ -206,14 +206,14 @@ Computer gamingComputer = new Computer.ComputerBuilder("Intel i9", "32GB")
 在实际的界面（如 MainActivity）中使用这个配置好的 RetrofitClient 来发起网络请求并处理响应
 
 ## 3.理解 ViewModel + Flow 基本用法
-常见的Flow有StateFlow和SharedFlow，它们是热数据流，只要该数据流被收集，或对它的任何其他引用在垃圾回收根中存在，该数据流就会一直存于内存中。
+常见的Flow有`StateFlow`和`SharedFlow`，它们是热数据流，只要该数据流被收集，或对它的任何其他引用在垃圾回收根中存在，该数据流就会一直存于内存中。
 
 ViewModel：提供了一种创建和检索绑定到特定生命周期的对象的方法。ViewModel通常存储视图数据的状态，并与其他组件（例如数据存储库或处理业务逻辑的领域层）进行通信。主要优点是，它可以缓存状态，并可在配置更改后持久保留相应状态。这意味着在 activity 之间导航时或进行配置更改后（例如旋转屏幕时），界面将无需重新提取数据。
 
 Flow：用于实现数据流。它的角色需要根据其持有者和使用者来判断
-1. 作为状态的持有者：处于ViewModel层，此时StateFlow是状态本身，存储着UI的状态值。
-2. 作为状态的暴露方式：ViewModel->View的桥梁，ViewModel 通过将 MutableStateFlow 转换为公开的 StateFlow，为 UI 层提供了一个只读的、可观察的数据流。
-3. 作为状态的消费者：UI层，在 UI 层，代码会收集这个 StateFlow，对其变化做出反应，并重新绘制UI。
+1. 作为状态的持有者：处于`ViewModel`层，此时StateFlow是状态本身，存储着UI的状态值。
+2. 作为状态的暴露方式：`ViewModel->View`的桥梁，ViewModel 通过将 MutableStateFlow 转换为公开的 StateFlow，为 UI 层提供了一个只读的、可观察的数据流。
+3. 作为状态的消费者：`UI`层，在 UI 层，代码会收集这个 StateFlow，对其变化做出反应，并重新绘制UI。
 
 关键特性：ViewModel 不持有任何对View的引用（如Button、TextView对象的引用）。它只提供属性和命令。这保证了它的可测试性，**你可以在没有UI的环境下测试ViewModel的所有逻辑**。
 
@@ -241,9 +241,9 @@ sealed class UiState {
     data class Error(val message: String) : UiState()
 }
 ```
-通过使用Flow进行状态管理，声明一个私有不可变的引用，引用对象是一个可变的StateFlow，<UiState>泛型参数指定流中数据的类型。
+通过使用Flow进行状态管理，声明一个私有不可变的引用，引用对象是一个可变的`StateFlow`，`<UiState>`泛型参数指定流中数据的类型。
 
-_uiState.asStateFlow()是一个转换方法，将可变的转为只读的StateFlow，外部只能消费不能修改。
+`_uiState.asStateFlow()`是一个转换方法，将可变的转为只读的StateFlow，外部只能消费不能修改。
 ```kotlin
 // 私有可变的StateFlow
 private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
@@ -252,7 +252,7 @@ val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 ```
 调用Model层接口，获取数据。
 
-Exception是所有异常(程序级别)的基类，这里捕获的是所有继承自Exception的异常。
+`Exception`是所有异常(程序级别)的基类，这里捕获的是所有继承自Exception的异常。
 ```kotlin
 fun loadNews() {
     viewModelScope.launch {
@@ -267,7 +267,37 @@ fun loadNews() {
 }
 ```
 #### 3.1.3.在 Activity 或 Fragment 中获取 ViewModel 实例
+用`视图绑定对象`，对View进行操作，用这种方式的好处是：
+* 所有引用都是**编译时**生成的，避免了可能的空指针异常和类型转换的错误
+* 无需遍历视图树，视图绑定是直接访问，性能较好
+
+`ActivityMainBinding`
+* `ActivityMainBinding` 是一个由 Android 视图绑定库自动生成的类。
+* 它的名字来源于你的布局文件名。如果你的布局文件叫 activity_main.xml，那么生成的绑定类就叫 ActivityMainBinding。
+```kotlin
+private val viewModel: NewsViewModel by viewModels()
+...
+// 使用ViewBinding替换findViewById--------
+binding = ActivityMainBinding.inflate(layoutInflater)
+setContentView(binding.root)
+```
 #### 3.1.4.观察数据变化并更新 UI
+`lifecycleScope.launch`解决协程与生命周期的管理问题，将生命周期绑定，当Activity进入后台或销毁时，自动停止收集。
+
+关键部分在`collect`，它是协程处理数据流的关键函数。
+* 启动数据收集
+* 阻塞式等待，挂起当前协程等待数据到来，数据到来后恢复执行，处理完数据后继续等待，类似于一个死循环。
+```kotlin
+lifecycleScope.launch {
+    viewModel.uiState.collect { state ->
+        when (state) {
+            is NewsViewModel.UiState.Loading -> { }
+            is NewsViewModel.UiState.Success -> { }
+            is NewsViewModel.UiState.Error -> { }
+        }
+    }
+}
+```
 #### 3.1.5.处理配置变更
 
 
