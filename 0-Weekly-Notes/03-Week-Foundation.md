@@ -287,6 +287,8 @@ setContentView(binding.root)
 关键部分在`collect`，它是协程处理数据流的关键函数。
 * 启动数据收集
 * 阻塞式等待，挂起当前协程等待数据到来，数据到来后恢复执行，处理完数据后继续等待，类似于一个死循环。
+
+`state`是`ViewModel.UiState`密封类的一个实例
 ```kotlin
 lifecycleScope.launch {
     viewModel.uiState.collect { state ->
