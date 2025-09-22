@@ -22,20 +22,14 @@ Room 持久性库在 SQLite 上提供了一个抽象层，以便在充分利用 
 #### 1.1.2.在项目中配置Room
 1. 在顶级build.gradle.kts中声明KSP插件
 ```kotlin
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
-    alias(libs.plugins.android.application) apply false
-    alias(libs.plugins.kotlin.android) apply false
-// apply false只声明插件，但不应用到当前模块，通常在顶级build...中使用
+    // apply false只声明插件，但不应用到当前模块，通常在顶级build...中使用
     alias(libs.plugins.ksp) apply false
 }
 ```
 2. 在模块级build.gradle.kts中启用KSP
 ```kotlin
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
-
     // 添加 KSP 插件
     alias(libs.plugins.ksp)
 }
@@ -44,6 +38,7 @@ plugins {
 ```kotlin
 [versions]中添加
 ksp = "2.0.21-1.0.27"
+
 [plugins]
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 ```
@@ -55,11 +50,10 @@ dependencies {
     // 1. Room 运行时库 - 必需
     implementation("androidx.room:room-runtime:$room_version")
 
-    // 2. Room 编译器 - 必需（二选一）
-    // 如果你用 Kotlin，用 KSP：
+    // 2. Room 编译器
     ksp("androidx.room:room-compiler:$room_version")
 
-    // 3. Kotlin 扩展和协程支持 - 强烈推荐（因为你是 Kotlin 项目）
+    // 3. Kotlin 扩展和协程支持 - 强烈推荐（Kotlin 项目）
     implementation("androidx.room:room-ktx:$room_version")
 }
 ```
