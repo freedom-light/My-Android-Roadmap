@@ -19,6 +19,14 @@ Room 持久性库在 SQLite 上提供了一个抽象层，以便在充分利用 
 | `@ForeignKey` | 定义外键约束，用于关联另一张表，保证引用的完整性。 |
 | `@Index` | 为表的特定列创建索引，以提高查询速度，但可能会降低插入和更新数据的速度。 |
 
+| 操作 | 主要注解 | 万能注解 | 特点 |
+| :--- | :--- | :--- | :--- |
+| **增 (Create)** | `@Insert` | `@Query("INSERT INTO ...")` | 专用注解高效简单 |
+| **查 (Read)** | **无** | `@Query("SELECT ...")` | **查询必须用 `@Query`** |
+| **改 (Update)** | `@Update` | `@Query("UPDATE ...")` | 专用注解根据主键更新 |
+| **删 (Delete)** | `@Delete` | `@Query("DELETE FROM ...")` | 专用注解根据主键删除 |
+
+
 #### 1.1.2.在项目中配置Room
 1. 在顶级build.gradle.kts中声明KSP插件
 ```kotlin
