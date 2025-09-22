@@ -66,6 +66,7 @@ dependencies {
 
 这样就可以正确使用Room了
 
+
 ### 1.2.SharedPreferences
 
 ## 2.掌握网络请求（Retrofit + OkHttp + Gson）
