@@ -19,7 +19,7 @@ Room 持久性库在 SQLite 上提供了一个抽象层，以便在充分利用 
 | `@ForeignKey` | 定义外键约束，用于关联另一张表，保证引用的完整性。 |
 | `@Index` | 为表的特定列创建索引，以提高查询速度，但可能会降低插入和更新数据的速度。 |
 
-#### 1.1.2.在项目中使用Room
+#### 1.1.2.在项目中配置Room
 1. 在顶级build.gradle.kts中声明KSP插件
 ```kotlin
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
@@ -65,6 +65,9 @@ dependencies {
 ```
 
 这样就可以正确使用Room了
+
+#### 1.1.3.在项目中使用Room
+
 
 
 ### 1.2.SharedPreferences
