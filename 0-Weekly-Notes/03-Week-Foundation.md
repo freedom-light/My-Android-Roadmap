@@ -259,6 +259,8 @@ val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 调用Model层接口，获取数据。
 
 `Exception`是所有异常(程序级别)的基类，这里捕获的是所有继承自Exception的异常。
+
+`viewModelScope`是一个协程作用域，用于在ViewModel中安全的管理协程生命周期，避免内存泄露，当ViewModel被销毁时，`viewModelScope`会自动取消其中所有正在运行的协程。
 ```kotlin
 fun loadNews() {
     viewModelScope.launch {
