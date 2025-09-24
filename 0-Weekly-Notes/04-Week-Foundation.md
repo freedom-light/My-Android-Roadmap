@@ -181,3 +181,7 @@ hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 
 ## 4.Navigation 组件（多页面跳转）
 
+## 5.Demo
+
+## 6.遇到的问题
+启动程序就闪退，也没有日志输出，错误原因用Application()创建了一个新的Application实例，但Room数据库初始化时需要长期存在的、有效的上下文，应使用系统维护的application，该变量是系统在应用启动时自动创建的全局Application实例，具备完整的上下文功能。
