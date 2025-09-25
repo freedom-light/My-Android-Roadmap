@@ -185,3 +185,6 @@ hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 
 ## 6.遇到的问题
 启动程序就闪退，也没有日志输出，错误原因用Application()创建了一个新的Application实例，但Room数据库初始化时需要长期存在的、有效的上下文，应使用系统维护的application，该变量是系统在应用启动时自动创建的全局Application实例，具备完整的上下文功能。
+数据库操作在主线程执行，可能会长时间阻塞UI导致问题，这里要注意，不是说开启一个新的协程就可以了，这个协程如果是在主线程里面的话，那还是会导致阻塞UI的问题，所以需要放到一个新的线程里面，IO线程(withContext(Dispatchers.IO))，suspend不自动切换线程，只是标记这个函数可以挂起。所以需要withContext(Dispatchers.IO) 来保证线程安全！
+不调用数据库的函数，在工具里面看不到数据库的信息。
+.java成功，.javaClass失败。
