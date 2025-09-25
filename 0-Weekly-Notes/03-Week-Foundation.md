@@ -69,8 +69,70 @@ dependencies {
 这样就可以正确使用Room了
 
 #### 1.1.3.在项目中使用Room
+Room：架构组件，三个主要组成部分：Entity, Dao, Database
 
+`Entity`(实体)是一个用于映射数据库表的结构类，每个实体类对应数据库的一张表，通过`@Entity`注解标识这是一个实体类，并可以指定表名，如果不知道类名就是表名
+```kotlin
+@Entity(tableName = "news_items")
+data class NewsItem(
+    @PrimaryKey
+    val id: String = "",
+    val ctime: String? = "",
+    val title: String? = "",
+    val description: String? = "",
+    val source: String? = "",
+    val picUrl: String? = "",
+    val url: String? = "",
+    // 默认未收藏
+    @ColumnInfo(defaultValue = "0")
+    val isFavorite: Int = 0,
+    // 收藏时间
+    val favoriteTime: Long = 0
+)
+```
+`DAO`（Data Access Object，数据访问对象）负责指定如何与数据库中的数据进行交互，`@Dao`注解用于标识该接口是Room的DAO
+```kotlin
+@Dao
+interface NewsItemDao {
+    // 收藏新闻
+    @Query("UPDATE news_items SET isFavorite = 1, favoriteTime = :time WHERE id = :newsId")
+    suspend fun addFavorite(newsId: String, time: Long = System.currentTimeMillis()): Int
 
+    // 取消收藏
+    @Query("UPDATE news_items SET isFavorite = 0, favoriteTime = 0 WHERE id = :newsId")
+    suspend fun removeFavorite(newsId: String): Int
+    ...
+}
+```
+`Database`是Room三层结构的顶层，负责管理数据库的创建、版本控制，并作为访问 DAO 的入口。使用 @Database 注解标识，并指定关联的实体类（Entity）和数据库版本。依旧使用双检锁实现单例。
+```kotlin
+@Database(entities = [NewsItem::class], version = 1, exportSchema = false)
+abstract class AppDatabase : RoomDatabase() {
+    // 2. 提供DAO的获取方法
+    abstract fun newsItemDao(): NewsItemDao
+
+    // 3. 单例模式：通过Application Context初始化（避免内存泄漏）
+    companion object {
+        @Volatile
+        // 当AppDatabase类第一次被引用时，这个初始化代码执行一次
+        private var INSTANCE: AppDatabase? = null// ⭐️ 这行代码只会执行一次
+
+        // 直接传入Application，不用单独传Context
+        fun getInstance(application: Application): AppDatabase {
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
+                    application.applicationContext, // 安全的全局Context
+                    AppDatabase::class.java,
+                    "news_db" // 数据库文件名
+                ).build()
+                INSTANCE = instance
+                instance
+            }
+        }
+    }
+}
+```
+在Model层的Repository调用DAO的接口进行数据库操作。
 
 ### 1.2.SharedPreferences
 
