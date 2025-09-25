@@ -122,7 +122,23 @@ val parentJob = CoroutineScope(Dispatchers.Main).launch {
 3. 异常处理困难
 
 ### 2.2.Flow
+常见的Flow有`StateFlow`和`SharedFlow`，它们是热数据流，只要该数据流被收集，或对它的任何其他引用在垃圾回收根中存在，该数据流就会一直存于内存中。
 
+在使用的时候可以通过`asStateFlow()`将`MutableStateFlow`暴露为不可变`StateFlow`，MutableStateFlow由ViewModel层持有，暴露不可变的数据流给View层。还有一种方式是用`stateIn()`将Flow(Flow是父类包含许多种Flow)转变为StateFlow。stateIn()需要指定的三个参数
+* scope（协程作用域）
+* started（启动策略）
+* initialValue（初始值）
+```kotlin
+stateIn(
+        scope = viewModelScope,
+        started = kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
+```
+`WhileSubscribed()`是启动策略的一种可以：`避免内存泄露`和`优化资源使用`，在有收集者的时候，流会保持活跃状态，正常发射数据，没有收集者时会等待5000毫秒后停止活跃，期间重新出新收集者会立即活跃。
+`combine()`可以将多个流组合到一起，简化操作，combine 操作符的返回值是一个新的普通 Flow。
+
+**核心特性是：当组合的任意一个源流发射新值时，它都会触发一次组合计算并发射新的结果。**
 ## 3.依赖注入(Hilt)
 ### 3.1.手动依赖注入
 Android推荐的应用架构推荐将代码划分为多个类，以达到**分离关注点**。这就需要将更多更小的类连接到一起，以实现彼此之间的依赖关系。
