@@ -11,6 +11,9 @@ fun Conversation(msgs: List<Message>){
 `setContent` 块定义了 activity 的布局，我们会在其中调用可组合函数。可组合函数只能从其他可组合函数调用。
 
 |可组合项|
+|:----|
+|Text|
+|Image|
 
 
 #### 1.1.1.在 Android Studio 中预览函数
