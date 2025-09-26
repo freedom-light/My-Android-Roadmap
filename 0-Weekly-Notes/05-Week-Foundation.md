@@ -9,6 +9,10 @@ fun Conversation(msgs: List<Message>){
 }
 ```
 `setContent` 块定义了 activity 的布局，我们会在其中调用可组合函数。可组合函数只能从其他可组合函数调用。
+
+|可组合项|
+
+
 #### 1.1.1.在 Android Studio 中预览函数
 借助 @Preview 注解，您可以在 Android Studio 中预览可组合函数，而无需构建应用并将其安装到 Android 设备或模拟器中。该注解只能用于不接受参数的可组合函数。预览带参数`fun A(val)`的可组合函数需要创建另一个函数`fun PreViewA()`，在`PreViewA`中传入适当的参数调用`A(val)`在 @Composable 上方添加 @Preview 注解。
 ```kotlin
@@ -19,6 +23,9 @@ fun PreViewA(){
 }
 ```
 ### 1.2.布局
+如果未提供有关如何排列这多个元素的信息，它们会相互重叠，使元素难以观察。
+`Column`函数可以用来垂直排列元素
+可以使用 `Row` 水平排列各项，并使用 `Box` 堆叠元素。
 ### 1.3.Material Design
 ### 1.4.列表和动画
 
