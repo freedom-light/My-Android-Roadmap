@@ -29,10 +29,35 @@ fun PreViewA(){
 如果未提供有关如何排列这多个元素的信息，它们会相互重叠，使元素难以观察。
 `Column`函数可以用来垂直排列元素
 可以使用 `Row` 水平排列各项，并使用 `Box` 堆叠元素。
+
+Compose 使用了修饰符。通过修饰符，可以更改可组合项的大小、布局、外观，还可以添加高级互动，例如使元素可点击。可以将这些修饰符链接起来，以创建更丰富的可组合项。
 ### 1.3.Material Design
-### 1.4.列表和动画
+Material Design 就是一套让数字界面看起来更自然、用起来更直观的设计规则。例如通过阴影表示层次关系、通过动画提供视觉反馈、具有语义含义的色彩、规范的字号。
+
+Compose 旨在支持 Material Design 原则。它的许多界面元素都原生支持 `Material Design 3` 及其界面元素的实现。
+
+使用方式：
+1. 使用项目中创建的 Material 主题，主题名可以通过`ui.theme -> Theme.kt`找到
+2. `Surface` 来封装可组合函数。
+这样一来，可组合项即可沿用应用主题中定义的样式，从而在整个应用中确保一致性。
 
 `Material Design` 是围绕 `Color(颜色)`、`Typography(排版)`、`Shape(形状)` 这三大要素构建的。
+* Color：可以在 `MaterialTheme.kt` 文件中将 `dynamicColor` 设置为 false，以更改此设置。否则Dynamic Color(动态取色)会自动从用户的壁纸中提取主色调。
+* MaterialTheme 中提供了 Material Typography 样式，只需将其添加到可组合项中即可。
+* 将消息正文封装在 Surface 可组合项中。这样即可自定义消息正文的形状、高度、内边距等..
+启用深色主题
+```kotlin
+@Preview(
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    showBackground = true,
+    name = "Dark Mode"
+)
+```
+
+
+### 1.4.列表和动画
+
+
 
 ## 学习错误处理与 App 权限管理
 ## 掌握 Git 基本协作（如 Pull Request 流程）
