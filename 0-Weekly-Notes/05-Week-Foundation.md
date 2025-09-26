@@ -43,8 +43,8 @@ Compose 旨在支持 Material Design 原则。它的许多界面元素都原生�
 
 `Material Design` 是围绕 `Color(颜色)`、`Typography(排版)`、`Shape(形状)` 这三大要素构建的。
 * Color：可以在 `MaterialTheme.kt` 文件中将 `dynamicColor` 设置为 false，以更改此设置。否则Dynamic Color(动态取色)会自动从用户的壁纸中提取主色调。
-* MaterialTheme 中提供了 Material Typography 样式，只需将其添加到可组合项中即可。
-* 将消息正文封装在 Surface 可组合项中。这样即可自定义消息正文的形状、高度、内边距等..
+* `MaterialTheme` 中提供了 `Material Typography` 样式，只需将其添加到可组合项中即可。
+* 将消息正文封装在 `Surface` 可组合项中。这样即可自定义消息正文的形状、高度、内边距等..
 启用深色主题
 ```kotlin
 @Preview(
