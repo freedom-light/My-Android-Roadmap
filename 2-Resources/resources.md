@@ -18,3 +18,7 @@ https://developer.android.com/guide/components/activities/intro-activities?hl=zh
 ```
 https://developer.android.com/codelabs/android-hilt?hl=zh-cn#0
 ```
+Compose入门文档
+```
+https://developer.android.com/develop/ui/compose/tutorial?hl=zh-cn
+```
