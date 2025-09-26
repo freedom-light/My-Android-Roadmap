@@ -101,6 +101,17 @@ println(addLambda(10, 20))
 fun add(a: Int, b: Int) = {a+b}
 ```
 
+Kotlin 函数调用时的命名参数
+* 平常使用的是**位置参数**参数按位置传递，不需要参数名
+* 命名参数，明确指定每个参数的名称
+```kotlin
+Text(
+    text = msg.author,
+    color = MaterialTheme.colorScheme.secondary, 
+    style = MaterialTheme.typography.titleSmall
+)
+```
+
 ### 1.4.定义常量与变量
 * 变量：var 标识符: 类型 = 初值
 * 常量：val 标识符: 类型 = 初值
