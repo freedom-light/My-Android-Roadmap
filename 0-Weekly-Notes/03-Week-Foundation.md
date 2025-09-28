@@ -344,7 +344,7 @@ fun loadNews() {
 }
 ```
 #### 3.1.3.在 Activity 或 Fragment 中获取 ViewModel 实例
-用`视图绑定对象`，对View进行操作，用这种方式的好处是：
+用`视图绑定对象`，对View进行操作(例：`binding = ActivityMainBinding.inflate(layoutInflater)`)，用这种方式的好处是：
 * 所有引用都是**编译时**生成的，避免了可能的空指针异常和类型转换的错误
 * 无需遍历视图树，视图绑定是直接访问，性能较好
 
@@ -358,6 +358,12 @@ private val viewModel: NewsViewModel by viewModels()
 binding = ActivityMainBinding.inflate(layoutInflater)
 setContentView(binding.root)
 ```
+
+ViewModel需要使用Application时(如构建Room DAO)建议使用by viewModels(), `private val viewModel: NewsViewModel by viewModels()`它会自动处理 Application 的传递。
+* 自动获取Application：通过 Activity 的 getApplication() 方法获取 Application
+* 创建 ViewModel：创建 NewsViewModel 实例
+* 传递 Application：自动将 Application 作为参数传递给 ViewModel 的构造函数
+
 #### 3.1.4.观察数据变化并更新 UI
 `lifecycleScope.launch`解决协程与生命周期的管理问题，将生命周期绑定，当Activity进入后台或销毁时，自动停止收集。
 
