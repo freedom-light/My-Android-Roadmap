@@ -198,6 +198,9 @@ hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 #### 3.2.2.使用Hilt流程
 1. @HiltAndroidApp：标志应用的入口点，让Hilt能够开始工作
 
+在依赖注入中，应该优先使用 @Inject 构造函数，只有在无法控制类构造时才使用 @Provides。这样代码更简洁，也符合依赖注入的原则。
+@Singleton // 用于指定依赖项的生命周期为单例
+
 ## 4.Navigation 组件（多页面跳转）
 
 ## 5.Demo
