@@ -132,6 +132,12 @@ abstract class AppDatabase : RoomDatabase() {
 }
 ```
 在Model层的Repository调用DAO的接口进行数据库操作。
+其中`abstract fun newsItemDao(): NewsItemDao`这段，看着只有函数声明，没有函数体。函数体是由Room框架在**编译时**自动生成的。属于是使用Room的一种约定，使用这个约定需要满足以下条件。
+* 函数名不需要一定是`newsItemDao`(无限制)
+* 是抽象方法
+* 返回类型是DAO接口
+* 无参数
+* 标记在了`@Database`的类中
 
 ### 1.2.SharedPreferences
 
