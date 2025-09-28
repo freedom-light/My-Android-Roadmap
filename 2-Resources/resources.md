@@ -22,3 +22,8 @@ Compose入门文档
 ```
 https://developer.android.com/develop/ui/compose/tutorial?hl=zh-cn
 ```
+
+关于如何使用Hilt
+```
+https://developer.android.com/training/dependency-injection/hilt-android?hl=zh-cn#generated-components
+```
