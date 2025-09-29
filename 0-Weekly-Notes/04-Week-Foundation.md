@@ -205,8 +205,22 @@ class MyApplication : Application(){
     }
 }
 ```
-2. 将依赖项注入Android类，Hilt可以为带有`@AndroidEntryPoint`注解的其他Android类提供依赖项。
-3. 
+2. 将依赖项注入Android类，Hilt可以为带有`@AndroidEntryPoint`注解的其他Android类提供依赖项。Hilt目前支持以下Android类
+    * Application（通过使用 @HiltAndroidApp）
+    * ViewModel（通过使用 @HiltViewModel）
+    * Activity
+    * Fragment
+    * View
+    * Service
+    * BroadcastReceiver
+3. 执行完第二步操作后，每个Android类会生成一个单独的Hilt组件，这些组件可以从它们各自的父类接收依赖项。如需从组件获取依赖项，使用`@Inject`注解执行字段注入。
+4. 定义Hilt绑定，“绑定”包含将某个类型的实例作为依赖项提供所需的信息。
+    * 构造函数注入，在某个类的构造函数中使用 @Inject 注解，以告知 Hilt 如何提供该类的实例`class AnalyticsAdapter @Inject constructor() { ... }`
+    * 对于不能通过构造函数注入的，可以使用`Hilt模块`即一个带有`@Module`注解的类它会告知 Hilt 如何提供某些类型的实例。还需要使用 `@InstallIn` 为 Hilt 模块添加注解。指定这个模块安装在哪个Hilt组件中。
+```
+@InstallIn(SingletonComponent::class)  // 告诉 Hilt：这个模块在整个应用生命周期内有效
+```
+5. 
 
 在依赖注入中，应该优先使用 @Inject 构造函数，只有在无法控制类构造时才使用 @Provides。这样代码更简洁，也符合依赖注入的原则。
 @Singleton // 用于指定依赖项的生命周期为单例
