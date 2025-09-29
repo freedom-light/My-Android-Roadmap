@@ -195,7 +195,7 @@ kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ```
 
-#### 3.2.2.使用Hilt流程
+#### 3.2.2.使用Hilt
 1. 所有使用Hilt的应用都必须包含`@HiltAndroidApp`注解的 `Application` 类，不使用Hilt的话可以不主动创建Application，使用系统默认的即可。
 ```kotlin
 @HiltAndroidApp
@@ -220,7 +220,14 @@ class MyApplication : Application(){
 ```
 @InstallIn(SingletonComponent::class)  // 告诉 Hilt：这个模块在整个应用生命周期内有效
 ```
-5. 
+5. 使用@Binds注入接口实例，对于接口来说，你无法通过构造函数注入它，而应向Hilt提供绑定信息，通过带有`@Binds`注解的抽象函数，该函数会向Hilt提供以下信息：
+    * 函数返回类型会告知Hilt，该函数提供哪个接口的实例
+    * 函数参数会告知Hilt要提供哪种实现
+6. 无法通过构造函数注入的另外情况，如类来自于外部库(Retrofit,OkHttpClient,Room数据库)，或者必须使用**构建器模式**创建实例。可以在**Hilt模块内部**创建一个函数并为函数添加`@Provides`注解，告知如何提供此类型的实例。带有注解的函数会向Hilt提供如下信息：
+    * 函数返回类型会告知 Hilt 函数提供哪个类型的实例
+    * 函数参数会告知 Hilt 相应类型的依赖项
+    * 函数主体会告知 Hilt 如何提供相应类型的实例。每当需要提供该类型的实例时，Hilt 都会执行函数主体。
+7. Hilt中的预定义限定符，Hilt提供了`@ApplicationContext` 和`@ActivityContext`限定符，在需要来自应用或activity的`context`类时使用。
 
 在依赖注入中，应该优先使用 @Inject 构造函数，只有在无法控制类构造时才使用 @Provides。这样代码更简洁，也符合依赖注入的原则。
 @Singleton // 用于指定依赖项的生命周期为单例
