@@ -184,11 +184,20 @@ implementation(libs.androidx.retrofit2)
 小tip
 可以看出在构建文件中，是没有“-”的用“.”代替
 ```kotlin
-implementation(libs.androidx.retrofit)
-implementation(libs.androidx.converter.gson)
+[versions]
+retrofit = "2.9.0"
+gson = "2.10.1"
 
+[libraries]
 androidx-retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 androidx-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
+androidx-gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+
+dependencies {
+    implementation(libs.androidx.retrofit)
+    implementation(libs.androidx.converter.gson)
+    implementation(libs.androidx.gson)
+}
 ```
 
 ### 2.2.创建数据类
