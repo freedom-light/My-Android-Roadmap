@@ -233,7 +233,15 @@ class MyApplication : Application(){
 @Singleton // 用于指定依赖项的生命周期为单例
 
 ## 4.Navigation 组件（多页面跳转）
-
+用于简化 Android 应用中多页面之间的导航和跳转。它提供了一种标准化、声明式的方式来处理应用内导航。
+```kotlin
+dependencies {
+    def nav_version = "2.5.3"
+    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
+}
+```
+同样是为了减少样板代码而生的技术，Navigation 组件通过标准化的方式简化了 Android 应用中的导航实现，提高了代码的可维护性和开发效率。
 ## 5.Demo
 
 ## 6.遇到的问题
