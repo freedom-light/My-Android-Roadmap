@@ -220,3 +220,166 @@ class WeatherViewModel @Inject constructor(private val repository: WeatherReposi
     }
 }
 ```
+# RetrofitClient
+```kotlin
+package com.example.a05_week_demo2.Model
+
+import okhttp3.OkHttpClient
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+
+object RetrofitClient {
+    val BASE_URL = "https://whyta.cn/"
+
+    val okHttpClient = OkHttpClient.Builder().build()
+
+    val retrofit = Retrofit.Builder()
+        .baseUrl(BASE_URL)
+        .client(okHttpClient)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    val weatherApiService: WeatherApiService by lazy {
+        retrofit.create(WeatherApiService::class.java)
+    }
+}
+```
+# WeatherApiService
+```kotlin
+package com.example.a05_week_demo2.Model
+
+import com.example.a05_week_demo2.Model.data.WeatherApiResponse
+import retrofit2.http.GET
+import retrofit2.http.Query
+
+interface WeatherApiService{
+    @GET("api/tianqi")
+    suspend fun getWeatherInfo(
+        @Query("key") key: String = "738b541a5f7a",
+        @Query("city") city: String
+    ): WeatherApiResponse
+}
+```
+# WeatherRepository
+```kotlin
+package com.example.a05_week_demo2.Model
+
+import android.util.Log
+import com.example.a05_week_demo2.Model.data.WeatherApiResponse
+import com.example.a05_week_demo2.Model.data.WeatherItem
+import javax.inject.Inject
+
+interface WeatherRepository{
+    suspend fun getWeatherData(city: String): WeatherItem
+}
+
+class WeatherRepositoryImpl @Inject constructor(
+    private val weatherApiService: WeatherApiService
+): WeatherRepository{
+    override suspend fun getWeatherData(city: String): WeatherItem {
+        return try {
+            val response: WeatherApiResponse = weatherApiService.getWeatherInfo(city = city)
+            if(response.message == "success"){
+                val data = response.weatherItem ?: throw IllegalArgumentException("API返回结果为空")
+                data
+            }else{
+                throw Exception("API返回失败: ${response.message}")
+            }
+        }catch (e: Exception){
+            Log.d("getWeatherData", "获取数据失败")
+            throw e
+        }
+    }
+}
+```
+# WeatherApiResponse
+```kotlin
+package com.example.a05_week_demo2.Model.data
+
+import com.google.gson.annotations.SerializedName
+
+data class WeatherApiResponse(
+    @SerializedName("status")
+    val status: String?,
+    @SerializedName("message")
+    val message: String?,
+    @SerializedName("data")
+    val weatherItem: WeatherItem?
+)
+```
+# WeatherDesc
+```kotlin
+package com.example.a05_week_demo2.Model.data
+
+import com.google.gson.annotations.SerializedName
+
+data class WeatherDesc (
+    @SerializedName("value")
+    val value: String? = ""
+)
+```
+
+# WeatherItem
+```kotlin
+package com.example.a05_week_demo2.Model.data
+
+import com.google.gson.annotations.SerializedName
+
+data class WeatherItem(
+    @SerializedName("city")
+    val city: String? = "",
+    @SerializedName("temp_C")
+    val tempC: String? = "",
+    @SerializedName("visibility")
+    val visibility: String? = "",
+    @SerializedName("weatherDesc")
+    val weatherDesc: List<WeatherDesc>
+)
+```
+# AppModule
+```kotlin
+package com.example.a05_week_demo2.di
+
+import com.example.a05_week_demo2.Model.RetrofitClient
+import com.example.a05_week_demo2.Model.WeatherApiService
+import com.example.a05_week_demo2.Model.WeatherRepository
+import com.example.a05_week_demo2.Model.WeatherRepositoryImpl
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
+
+@Module
+@InstallIn(SingletonComponent::class)
+object AppModule {
+    @Singleton
+    @Provides
+    fun provideApiService(): WeatherApiService{
+        return RetrofitClient.weatherApiService
+    }
+
+    @Singleton
+    @Provides
+    fun provideWeatherRepository(
+        weatherApiService: WeatherApiService
+    ): WeatherRepository{
+        return WeatherRepositoryImpl(weatherApiService)
+    }
+}
+```
+
+# MyApplication
+```kotlin
+package com.example.a05_week_demo2
+
+import android.app.Application
+import dagger.hilt.android.HiltAndroidApp
+
+@HiltAndroidApp
+class MyApplication: Application(){
+    override fun onCreate(){
+        super.onCreate();
+    }
+}
+```
