@@ -178,4 +178,44 @@ fun WeatherScreenPreview() {
     }
 }
 ```
-# 
+```kotlin
+package com.example.a05_week_demo2.ViewModel
+
+import android.util.Log
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.a05_week_demo2.Model.WeatherRepository
+import com.example.a05_week_demo2.Model.data.WeatherDesc
+import com.example.a05_week_demo2.Model.data.WeatherItem
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@HiltViewModel
+class WeatherViewModel @Inject constructor(private val repository: WeatherRepository): ViewModel(){
+    // 定义私有状态流
+    private val _weatherData = MutableStateFlow<WeatherItem>(
+        WeatherItem(
+            city = "",
+            tempC = "",
+            visibility = "",
+            weatherDesc = emptyList()
+        )
+    )
+    val weatherData: StateFlow<WeatherItem> = _weatherData.asStateFlow()
+
+    fun loadWeather(city: String){
+        viewModelScope.launch{
+            try {
+                val data = repository.getWeatherData(city)
+                _weatherData.value = data
+            }catch (e: Exception){
+                Log.d("WeatherViewModel", "加载天气数据失败", e)
+            }
+        }
+    }
+}
+```
