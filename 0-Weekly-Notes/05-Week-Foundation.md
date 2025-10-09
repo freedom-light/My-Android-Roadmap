@@ -91,5 +91,29 @@ fun WeatherScreen(
     modifier: Modifier = Modifier,
 ) {...}
 ```
-2. 
-3.  
+2. 对ViewModel中的UiState使用密封类/接口来实现，保证状态转移为原子操作，并且状态转换为单一操作防止漏写造成问题。
+```kotlin
+sealed interface WeatherState{
+    object Loading: WeatherState
+    data class Success(val weatherData: WeatherItem): WeatherState
+    data class Error(val message: String): WeatherState
+    object Idle: WeatherState
+}
+
+try {
+    // 开始加载
+    _uiState.value = _uiState.value.copy(
+        weatherState = WeatherState.Loading
+    )
+    val data = repository.getWeatherData(targetCity)
+    _uiState.value = _uiState.value.copy(
+        weatherState = WeatherState.Success(data)
+    )
+}catch (e: Exception){
+    Log.d("WeatherViewModel", "加载天气数据失败", e)
+    _uiState.value = _uiState.value.copy(
+        weatherState = WeatherState.Error("加载失败: ${e.message ?: "未知错误"}")
+    )
+}
+```
+3. 使从API中获取的数据字段都有默认值或可空，这样使兼容性更强，防止因为网址中的数据错误导致程序崩溃。
