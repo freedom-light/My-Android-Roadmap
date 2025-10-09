@@ -175,6 +175,12 @@ fun WeatherScreenPreview() {
 package com.example.a05_week_demo2.ViewModel
 
 import android.util.Log
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.a05_week_demo2.Model.WeatherRepository
@@ -187,26 +193,78 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+sealed interface WeatherState{
+    object Loading: WeatherState
+    data class Success(val weatherData: WeatherItem): WeatherState
+    data class Error(val message: String): WeatherState
+    object Idle: WeatherState
+}
+
+data class WeatherUiState(
+    val weatherState: WeatherState = WeatherState.Idle,
+    val cityInput: String = ""
+){
+    // 提供便捷的 computed properties，保持向后兼容
+    val isLoading: Boolean
+        get() = weatherState is WeatherState.Loading
+
+    val errorMessage: String?
+        get() = when (weatherState) {
+            is WeatherState.Error -> weatherState.message
+            else -> null
+        }
+
+    val weatherData: WeatherItem
+        get() = when (weatherState) {
+            is WeatherState.Success -> weatherState.weatherData
+            else -> WeatherItem() // 或者提供一个默认的空对象
+        }
+}
+
 @HiltViewModel
 class WeatherViewModel @Inject constructor(private val repository: WeatherRepository): ViewModel(){
     // 定义私有状态流
-    private val _weatherData = MutableStateFlow<WeatherItem>(
-        WeatherItem(
-            city = "",
-            tempC = "",
-            visibility = "",
-            weatherDesc = emptyList()
-        )
-    )
-    val weatherData: StateFlow<WeatherItem> = _weatherData.asStateFlow()
+    private val _uiState = MutableStateFlow(WeatherUiState())
+    val uiState = _uiState.asStateFlow()
 
-    fun loadWeather(city: String){
-        viewModelScope.launch{
+    init {
+        loadWeather("Beijing")
+    }
+
+    // 更新城市输入
+    fun updateCityInput(city: String){
+        _uiState.value = _uiState.value.copy(
+            cityInput = city,
+        )
+    }
+    // 加载天气数据
+    fun loadWeather(city: String? = null){
+        val targetCity = city ?: _uiState.value.cityInput
+        if(targetCity.isBlank()){
+            _uiState.value = _uiState.value.copy(
+                weatherState = WeatherState.Error("请输入城市名全拼")
+            )
+            return
+        }
+
+        viewModelScope.launch {
             try {
-                val data = repository.getWeatherData(city)
-                _weatherData.value = data
+                // 开始加载
+                _uiState.value = _uiState.value.copy(
+                    weatherState = WeatherState.Loading
+                )
+
+                val data = repository.getWeatherData(targetCity)
+
+                _uiState.value = _uiState.value.copy(
+                    weatherState = WeatherState.Success(data)
+                )
+
             }catch (e: Exception){
                 Log.d("WeatherViewModel", "加载天气数据失败", e)
+                _uiState.value = _uiState.value.copy(
+                    weatherState = WeatherState.Error("加载失败: ${e.message ?: "未知错误"}")
+                )
             }
         }
     }
@@ -325,7 +383,7 @@ data class WeatherItem(
     @SerializedName("visibility")
     val visibility: String? = "",
     @SerializedName("weatherDesc")
-    val weatherDesc: List<WeatherDesc>
+    val weatherDesc: List<WeatherDesc> = emptyList()
 )
 ```
 # AppModule
