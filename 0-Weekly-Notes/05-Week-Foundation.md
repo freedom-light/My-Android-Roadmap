@@ -61,6 +61,35 @@ Compose 旨在支持 Material Design 原则。它的许多界面元素都原生�
 
 可组合函数可以使用 remember 将本地状态存储在内存中，并跟踪传递给 mutableStateOf 的值的变化。该值更新时，系统会自动重新绘制使用此状态的可组合项（及其子项）。这称为重组。
 
-## 学习错误处理与 App 权限管理
-## 掌握 Git 基本协作（如 Pull Request 流程）
-## 了解日志系统（Timber）
+## 写Demo得到的经验
+1. `状态提升`（State Hoisting） 和 `单向数据流`如果混合UI和业务逻辑的话可能导致调试困难，并且无法预览。应尽量符合单一职责原则，可以使用回调的方式来解决，将原本混合的ui与业务逻辑拆开。一个负责连接ViewModel与ui，一个仅负责ui展示，无任何其他行为。纯ui展示的部分，接收函数类型的参数，实际使用时通过回调的方式调用ViewModel的函数。
+```kotlin
+@Composable
+fun MainScreen(viewModel: WeatherViewModel = hiltViewModel()) {
+    _05WeekDemo2Theme() {
+        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+            val uiState by viewModel.uiState.collectAsState()
+            WeatherScreen(
+                uiState = uiState,
+                updateCityInput = {
+                    viewModel.updateCityInput(it)
+                },
+                loadWeather = {
+                    viewModel.loadWeather(it)
+                },
+                modifier = Modifier.padding(innerPadding)
+            )
+        }
+    }
+}
+
+@Composable
+fun WeatherScreen(
+    uiState: WeatherUiState,
+    updateCityInput: ((String) -> Unit)? = null,
+    loadWeather: ((String) -> Unit)? = null,
+    modifier: Modifier = Modifier,
+) {...}
+```
+2. 
+3.  
