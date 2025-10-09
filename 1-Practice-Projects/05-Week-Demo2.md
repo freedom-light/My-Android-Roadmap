@@ -35,6 +35,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import androidx.compose.material3.Button
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.rememberCoroutineScope
+import com.example.a05_week_demo2.ViewModel.WeatherUiState
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -43,57 +44,44 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            _05WeekDemo2Theme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    WeatherScreen(
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+            MainScreen()
+        }
+    }
+}
+
+@Composable
+fun MainScreen(viewModel: WeatherViewModel = hiltViewModel()) {
+    _05WeekDemo2Theme() {
+        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+            val uiState by viewModel.uiState.collectAsState()
+            WeatherScreen(
+                uiState = uiState,
+                updateCityInput = {
+                    viewModel.updateCityInput(it)
+                },
+                loadWeather = {
+                    viewModel.loadWeather(it)
+                },
+                modifier = Modifier.padding(innerPadding)
+            )
         }
     }
 }
 
 @Composable
 fun WeatherScreen(
+    uiState: WeatherUiState,
+    updateCityInput: ((String) -> Unit)? = null,
+    loadWeather: ((String) -> Unit)? = null,
     modifier: Modifier = Modifier,
-    viewModel: WeatherViewModel = hiltViewModel()
 ) {
-    val weatherData by viewModel.weatherData.collectAsState()
-    var isLoading by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
-    var cityInput by remember { mutableStateOf("") }
-    val scope = rememberCoroutineScope()  // UI 层协程作用域
-
-    val queryWeather: (String) -> Unit = lambda@{ city ->
-        if (city.isBlank()) {
-            errorMessage = "请输入城市名"
-            return@lambda
-        }
-        scope.launch {
-            isLoading = true
-            try {
-                viewModel.loadWeather(city)
-                errorMessage = null
-            } catch (e: Exception) {
-                errorMessage = "加载失败: ${e.message}"
-            } finally {
-                isLoading = false
-            }
-        }
-    }
-
-    // 初始加载
-    LaunchedEffect(Unit) {
-        queryWeather("Beijing")
-    }
 
     Surface(
         modifier = modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
         when {
-            isLoading -> {
+            uiState.isLoading -> {
                 // 加载状态
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -102,19 +90,21 @@ fun WeatherScreen(
                     CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 }
             }
-            errorMessage != null -> {
+
+            uiState.errorMessage != null -> {
                 // 错误状态
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = errorMessage ?: "未知错误",
+                        text = uiState.errorMessage ?: "未知错误",
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
             }
+
             else -> {
                 // 内容布局（包含输入框和查询按钮）
                 Column(
@@ -126,14 +116,16 @@ fun WeatherScreen(
                 ) {
                     // 输入框
                     TextField(
-                        value = cityInput,
-                        onValueChange = { cityInput = it },
+                        value = uiState.cityInput, // 将状态的当前值显示在输入框中
+                        onValueChange = {
+                            updateCityInput?.invoke(it)
+                        },
                         label = { Text("请输入城市名") },
                         modifier = Modifier.fillMaxWidth()
                     )
                     // 查询按钮
                     Button(
-                        onClick = { queryWeather(cityInput) },
+                        onClick = { loadWeather?.invoke((uiState.cityInput)) },
                         modifier = Modifier.padding(top = 16.dp)
                     ) {
                         Text("查询天气")
@@ -144,22 +136,22 @@ fun WeatherScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "城市: ${weatherData.city}",
+                            text = "城市: ${uiState.weatherData.city}",
                             style = MaterialTheme.typography.headlineMedium,
                             modifier = Modifier.padding(bottom = 16.dp)
                         )
                         Text(
-                            text = "温度: ${weatherData.tempC} °C",
+                            text = "温度: ${uiState.weatherData.tempC} °C",
                             style = MaterialTheme.typography.headlineSmall,
                             modifier = Modifier.padding(bottom = 12.dp)
                         )
                         Text(
-                            text = "天气状况: ${weatherData.weatherDesc.firstOrNull()?.value ?: ""}",
+                            text = "天气状况: ${uiState.weatherData.weatherDesc.firstOrNull()?.value ?: ""}",
                             style = MaterialTheme.typography.bodyLarge,
                             modifier = Modifier.padding(bottom = 12.dp)
                         )
                         Text(
-                            text = "能见度: ${weatherData.visibility}",
+                            text = "能见度: ${uiState.weatherData.visibility}",
                             style = MaterialTheme.typography.bodyLarge
                         )
                     }
@@ -174,7 +166,7 @@ fun WeatherScreen(
 @Composable
 fun WeatherScreenPreview() {
     _05WeekDemo2Theme {
-        WeatherScreen()
+        WeatherScreen(WeatherUiState())
     }
 }
 ```
