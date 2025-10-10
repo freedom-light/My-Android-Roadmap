@@ -444,8 +444,8 @@ implementation(libs.androidx.glide)
 ```
 
 ## 7.收获经验/优化点
-* 改架构然后监听状态，
-* 格式化管理，new -> package
+* 将项目重构成 ViewPager2 + Fragment + TabLayout 的方式，更深入的践行MVVM架构的层次分离
+* 数据库改为监听的方式
 * 不要信任服务端的数据，进行空校验，或者赋值为可空，不然调用空对象，会崩要避免API字段返回null导致的解析崩溃
 
 
