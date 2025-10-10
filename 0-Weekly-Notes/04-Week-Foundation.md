@@ -243,8 +243,103 @@ dependencies {
 ```
 同样是为了减少样板代码而生的技术，Navigation 组件通过标准化的方式简化了 Android 应用中的导航实现，提高了代码的可维护性和开发效率。
 ## 5.Demo
-### 将新闻APP重构为
+### 将新闻APP重构为 ViewPager2 + Fragment + TabLayout 并 将数据库改为`监听`模式
+#### ViewPager2 + Fragment + TabLayout使用方式
+1. 第一步：创建 Fragment
+使用这个技术首先将需要的页面创建出来，以新闻APP为例，一个全部新闻页、一个收藏新闻页。
+```kotlin
+// 示例：AllNewsFragment
+class AllNewsFragment : Fragment() {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        // 在这里初始化你的 Fragment 布局和数据
+        return inflater.inflate(R.layout.fragment_all_news, container, false)
+    }
+    // ... 其他逻辑
+}
+```
+2. 第二步：创建适配器 (Adapter)
+创建一个继承自 FragmentStateAdapter 的类。
+* 构造函数：可以接收 FragmentActivity（用于 Activity 中）或 Fragment（用于嵌套在另一个 Fragment 中）。
+* getItemCount()：返回 ViewPager 中页面的总数
+* createFragment(position: Int)：根据位置创建并返回对应的 Fragment 实例。
+```kotlin
+class NewsPagerAdapter(fragmentActivity: FragmentActivity) : FragmentStateAdapter(fragmentActivity) {
 
+    // 确定页面的数量
+    override fun getItemCount(): Int = 2
+
+    // 根据位置返回对应的 Fragment
+    override fun createFragment(position: Int): Fragment {
+        return when (position) {
+            0 -> AllNewsFragment() // 第一页
+            1 -> FavoritesFragment() // 第二页
+            else -> throw IllegalArgumentException("Invalid position: $position")
+        }
+    }
+}
+```
+3. 第三步：在 Activity 或 Fragment 中设置 ViewPager2
+在你的布局 XML 中放置一个 ViewPager2 组件，然后在代码中获取它并设置适配器。
+```kotlin
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!-- 可选：与 ViewPager2 联动的 TabLayout -->
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+</LinearLayout>
+```
+4. 第四步：使用TabLayoutMediator关联TabLayout和ViewPager2。关联TabLayout和ViewPager：使用TabLayoutMediator将标签布局与翻页器关联起来，实现：
+* 点击标签切换对应页面
+* 滑动页面时自动更新选中的标签
+```kotlin
+private fun setupViewPagerWithTabs() {
+    val adapter = NewsPagerAdapter(this)
+    binding.viewPager.adapter = adapter
+    // 使用TabLayoutMediator关联TabLayout和ViewPager2
+    tabLayoutMediator = TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
+        tab.text = when (position) {
+            0 -> "全部新闻"
+            1 -> "我的收藏"
+            else -> ""
+        }
+    }
+    tabLayoutMediator.attach()
+}
+```
+#### 数据库改为`监听`模式
+主要是一点，数据流Flow是可以被collect的，冷数据流适用于一次性的操作，因为冷数据流每次都是独立的数据流，有收集者时才生产。
+```kotlin
+private fun observeFavorites(){
+    viewModelScope.launch {
+        repository.observeFavorites().collect { favorites ->
+            _state.update { it.copy(myFavorites = favorites) }
+        }
+    }
+}
+```
+```kotlin
+override suspend fun observeFavorites(): Flow<List<NewsItem>> {
+    return newsDao.observeFavorites()
+}
+```
+```kotlin
+// 查询所有收藏的新闻 - 新增Flow监听版本
+@Query("SELECT * FROM news_items WHERE isFavorite = 1 ORDER BY favoriteTime DESC")
+fun observeFavorites(): Flow<List<NewsItem>>
+```
 ## 6.遇到的问题
 启动程序就闪退，也没有日志输出，错误原因用Application()创建了一个新的Application实例，但Room数据库初始化时需要长期存在的、有效的上下文，应使用系统维护的application，该变量是系统在应用启动时自动创建的全局Application实例，具备完整的上下文功能。
 
