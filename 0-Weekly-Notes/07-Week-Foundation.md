@@ -51,3 +51,6 @@ class  MyGLSurfaceView(context: Context) : SurfaceView(context), SurfaceHolder.C
   * 当Activity进入后台时，必须停止渲染降低功耗
   * 当Activity进入前台时，需要开始重新渲染
 * `renderThread`是承载OpenGL渲染任务的“工作线程”，使用可空类型是因为线程会在surface销毁时被释放。
+通过SurfaceHolder注册回调的方式实现发布-订阅模式。因为Surface的生命周期是有系统层面管理的，通过回调机制，我注册回调，来信息了之后系统通知我，之后我执行自己的逻辑。
+
+系统通知：Surface创建好了，就会执行你注册的回调函数，surfaceCreated内部的逻辑，你就可以进行渲染等操作了。
