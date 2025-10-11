@@ -30,7 +30,7 @@ SurfaceView 通过`双缓冲`和`独立表面`的机制来解决上述问题：
 3. 在非主线程绘制
    * 这是 SurfaceView 最核心的优势。因为它拥有独立的表面和双缓冲机制，所以繁重的绘制工作可以完全放在一个专门的“渲染线程”中进行。
    * 这样，主线程就可以被解放出来，专心处理用户交互（点击、滑动）、业务逻辑等，避免了因绘制任务繁重而导致的 UI 卡顿。
-### 创建自定义线程(15)
+### 创建自定义线程
 实现 SurfaceHolder.Callback → surfaceCreated() → 启动渲染线程 → surfaceChanged() → 渲染循环 → surfaceDestroyed() → 停止线程
 ```kotlin
 class  MyGLSurfaceView(context: Context) : SurfaceView(context), SurfaceHolder.Callback {
@@ -46,3 +46,8 @@ class  MyGLSurfaceView(context: Context) : SurfaceView(context), SurfaceHolder.C
     override fun surfaceDestroyed(holder: SurfaceHolder)  {...}
 }
 ```
+类中两个变量的作用`renderThread`和`isRunning`.
+* `isRunning`用于控制渲染线程的生命周期，`SurfaceView`的渲染线程需要与 Activity/Fragment 的生命周期同步
+  * 当Activity进入后台时，必须停止渲染降低功耗
+  * 当Activity进入前台时，需要开始重新渲染
+* `renderThread`是承载OpenGL渲染任务的“工作线程”，使用可空类型是因为线程会在surface销毁时被释放。
