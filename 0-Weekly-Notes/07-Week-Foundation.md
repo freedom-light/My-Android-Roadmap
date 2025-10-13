@@ -93,27 +93,68 @@ class GLRenderThread(private val surfaceHolder: SurfaceHolder) : Runnable {
 ### EGL的基本使用步骤
 1. 首先我们需要知道绘制内容的目标在哪里，`EGLDisplayer`是一个封装系统屏幕的数据类型，通常通过`eglGetDisplay`方法来返回`EGLDisplay`作为OpenGl ES的渲染目标，`eglGetDisplay()`
 ```kotlin
-
+// 获取OpenGL ES的渲染目标
+eglDisplay = EGL14.eglGetDisplay(EGL14.EGL_DEFAULT_DISPLAY)
+if(eglDisplay == EGL14.EGL_NO_DISPLAY){
+    throw RuntimeException("unable to get EGL14 display")
+}
 ```
 2. 初始化显示设备，第一参数代表Major版本，第二个代表Minor版本。如果不关心版本号，传0或者null就可以了。初始化与 EGLDisplay 之间的连接：`eglInitialize()`
 ```kotlin
-
+val version = IntArray(2)
+if(!EGL14.eglInitialize(eglDisplay, version, 0, version, 1)){
+    throw RuntimeException("EGL14 init error")
+}
 ```
 3. 下面我们进行配置选项，使用`eglChooseConfig()`方法,Android平台的配置代码如下：
 ```kotlin
-
+// 参数的顺序没有要求，是按键值对的形式匹配的，EGL14.EGL_NONE要放在最后
+val configAttribs = intArrayOf(
+    EGL14.EGL_RED_SIZE, 8,
+    EGL14.EGL_GREEN_SIZE, 8,
+    EGL14.EGL_BLUE_SIZE, 8,
+    EGL14.EGL_ALPHA_SIZE, 8,
+    EGL14.EGL_DEPTH_SIZE, 0,
+    EGL14.EGL_STENCIL_SIZE, 0,
+    EGL14.EGL_RENDERABLE_TYPE, EGL14.EGL_OPENGL_ES2_BIT,
+    EGL14.EGL_NONE
+)
+val configs = arrayOfNulls<EGLConfig>(1)
+val numConfig = IntArray(1)
+if(!EGL14.eglChooseConfig(
+        eglDisplay,
+        configAttribs, 0,
+        configs, 0, 1,
+        numConfig, 0))
+{
+    throw RuntimeException("eglChooseConfig error")
+}
+val config = configs[0] ?: throw RuntimeException("No EGLConfig found")
 ```
 4. 接下来我们需要创建OpenGl的上下文环境 `EGLContext` 实例，这里值得留意的是，OpenGl的任何一条指令都是必须在自己的OpenGl上下文环境中运行，我们可以通过`eglCreateContext()`方法来构建上下文环境：`eglCreateContext`中的第三个参数可以传入一个`EGLContext`类型的变量，改变量的意义是可以与正在创建的上下文环境共享OpenGl资源，包括纹理ID,FrameBuffer以及其他Buffer资源。如果没有的话可以填写Null.
 ```kotlin
-
+val contextAttribs = intArrayOf(
+    EGL14.EGL_CONTEXT_CLIENT_VERSION, 2,
+    EGL14.EGL_NONE
+)
+eglContext = EGL14.eglCreateContext(eglDisplay, config, EGL14.EGL_NO_CONTEXT, contextAttribs, 0)
+if(eglContext == EGL14.EGL_NO_CONTEXT){
+    throw RuntimeException("eglContext create error")
+}
 ```
 5. 通过上面四步,获取 OpenGl 上下文之后，说明EGL和OpenGl ES端的环境已经搭建完毕。下面的步骤是如何将EGL和设备屏幕连接起来，使用EGLSurface，通过EGL库提供eglCreateWindowSurface可以创建一个实际可以显示的surface.当然，如果需要离线的surface，我们可以通过`eglCreatePbufferSurface`创建。`eglCreateWindowSurface()`
 ```kotlin
-
+val surfaceAttribs = intArrayOf(EGL14.EGL_NONE)
+eglSurface = EGL14.eglCreateWindowSurface(eglDisplay, config, surfaceHolder.surface, surfaceAttribs, 0)
+if(eglSurface == EGL14.EGL_NO_SURFACE){
+    throw RuntimeException("eglSurfacae create error")
+}
 ```
 6. 通过上面的步骤，EGL的准备工作做好了，接下来的内容是如何在创建好的EGL环境下工作。首先OpenGl ES 的渲染必须新开一个线程，并为该线程绑定显示设备及上下文环境（Context）。因为前面有说过OpenGl指令必须要在其上下文环境中才能执行。所以我们首先要通过 `eglMakeCurrent()` 方法来绑定该线程的显示设备及上下文。
 ```kotlin
-
+if(!EGL14.eglMakeCurrent(eglDisplay, eglSurface, eglSurface, eglContext)){
+    throw RuntimeException("eglMakeCurrent error")
+}
 ```
 7. 当我们绑定完成之后，我们就可以进行`RenderLoop`循环了。EGL的工作模式是双缓冲模式。直到调用了`eglSwapBuffers`这条指令的时候，将前后台的FrameBuffer进行交换。
 ```kotlin
@@ -121,5 +162,8 @@ class GLRenderThread(private val surfaceHolder: SurfaceHolder) : Runnable {
 ```
 8. 在所有的操作都执行完之后，我们要销毁资源。特别注意，销毁资源必须在当前线程中进行。首先我们销毁显示设备（EGLSurface）,然后销毁上下文（EGLContext）,停止并释放线程，最后终止与EGLDisplay之间的链接。
 ```kotlin
-
+EGL14.eglMakeCurrent(eglDisplay, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_CONTEXT)
+EGL14.eglDestroySurface(eglDisplay, eglSurface)
+EGL14.eglDestroyContext(eglDisplay, eglContext)
+EGL14.eglTerminate(eglDisplay)
 ```
