@@ -167,3 +167,21 @@ EGL14.eglDestroySurface(eglDisplay, eglSurface)
 EGL14.eglDestroyContext(eglDisplay, eglContext)
 EGL14.eglTerminate(eglDisplay)
 ```
+## 3.创建基础着色器
+### GLSL是什么
+GLSL（全称 OpenGL Shading Language）是一种专门为图形渲染编程设计的着色器语言，主要用于编写运行在 GPU（图形处理器）上的 “着色器程序”，控制图形渲染的各个阶段（如顶点变换、像素颜色计算等）。
+
+GLSL使用类型限定符而不是通过读取和写入操作来管理输入和输出。着色器主要分为顶点着色器（Vertex Shader）和片段着色器（Fragment Shader）两部分。
+
+在OpenGL程序中使用着色器有一套固定的流程，清楚每个函数是干什么的就好，不需要太纠结这个事情。
+
+1. 顶点着色程序的源代码和片段着色程序的源代码分别写入到一个文件里（或字符数组）里面，一般顶点着色器源码文件后缀为.vert，片段着色器源码文件后缀为.frag；
+2. 使用glCreateshader()分别创建一个顶点着色器对象和一个片段着色器对象；
+3. 使用glShaderSource()分别将顶点/片段着色程序的源代码字符数组绑定到顶点/片段着色器对象上；
+4. 使用glCompileShader()分别编译顶点着色器和片段着色器对象（最好检查一下编译的成功与否）；
+5. 使用glCreaterProgram()创建一个着色程序对象；
+6. 使用glAttachShader(）将顶点和片段着色器对象附件到需要着色的程序对象上；
+7. 使用glLinkProgram()分别将顶点和片段着色器和着色程序执行链接生成一个可执行程序（最好检查一下链接的成功与否）；
+8. 使用glUseProgram()将OpenGL渲染管道切换到着色器模式，并使用当前的着色器进行渲染；
+
+
