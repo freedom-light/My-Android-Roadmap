@@ -180,8 +180,80 @@ GLSL使用类型限定符而不是通过读取和写入操作来管理输入和�
 3. 使用glShaderSource()分别将顶点/片段着色程序的源代码字符数组绑定到顶点/片段着色器对象上；
 4. 使用glCompileShader()分别编译顶点着色器和片段着色器对象（最好检查一下编译的成功与否）；
 5. 使用glCreaterProgram()创建一个着色程序对象；
-6. 使用glAttachShader(）将顶点和片段着色器对象附件到需要着色的程序对象上；
+6. 使用glAttachShader()将顶点和片段着色器对象附件到需要着色的程序对象上；
 7. 使用glLinkProgram()分别将顶点和片段着色器和着色程序执行链接生成一个可执行程序（最好检查一下链接的成功与否）；
 8. 使用glUseProgram()将OpenGL渲染管道切换到着色器模式，并使用当前的着色器进行渲染；
 
+```kotlin
+// OpenGL着色器管理工具类
+object ShaderHelper {
+    fun compileVertexShader(context: Context, resourceId: Int): Int{
+        return compileShader(GLES20.GL_VERTEX_SHADER, readShaderSource(context, resourceId))
+    }
+    fun compileFragmentShader(context: Context, resourceId: Int): Int{
+        return compileShader(GLES20.GL_FRAGMENT_SHADER, readShaderSource(context, resourceId))
+    }
 
+    // 读取着色器源文件的工具函数
+    private fun readShaderSource(context: Context, resourceId: Int): String{
+        // 通过上下文，根据资源文件ID打开对应的源文件
+        // use函数，进行资源自动管理，inputStream代表打开的输入流
+        return context.resources.openRawResource(resourceId).use { inputStream ->
+            // it - lambad表达式的默认参数名，这里指BufferedReader实例
+            inputStream.bufferedReader().use { it.readText() }
+        }
+    }
+
+    // 编译着色器
+    private fun compileShader(type: Int, shaderCode: String): Int{
+        // 创建着色器对象
+        // 参数type 指定要创建的着色器类型（顶点着色器/片段着色器）
+        val shader = GLES20.glCreateShader(type)
+
+        // 加载着色器源代码
+        GLES20.glShaderSource(shader, shaderCode)
+        // 编译着色器
+        GLES20.glCompileShader(shader)
+
+        //检查编译状态
+        val compileStatus = IntArray(1)
+        GLES20.glGetShaderiv(shader, GLES20.GL_COMPILE_STATUS, compileStatus, 0)
+        // 错误处理
+        if(compileStatus[0] == 0){
+            throw RuntimeException("Shader compile error: ${GLES20.glGetShaderInfoLog(shader)}")
+        }
+
+        // 返回着色器句柄
+        return shader
+    }
+
+    // 链接着色器 将编译好的顶点着色器和片段着色器链接成一个完整的GPU可执行程序
+    fun linkProgram(vertexShader: Int, fragmentShader: Int): Int{
+        // 创建着色器对象
+        val program = GLES20.glCreateProgram()
+        // 附加顶点着色器及片段着色器
+        GLES20.glAttachShader(program, vertexShader)
+        GLES20.glAttachShader(program, fragmentShader)
+
+        // 链接程序
+        GLES20.glLinkProgram(program)
+        // 检查链接状态
+        val linkStatus = IntArray(1)
+        GLES20.glGetProgramiv(program, GLES20.GL_LINK_STATUS, linkStatus, 0)
+
+        //错误处理
+        if(linkStatus[0] == 0){
+            GLES20.glDeleteProgram(program)
+            throw RuntimeException("Program linking failed: ${GLES20.glGetProgramInfoLog(program)}")
+        }
+
+        // 返回程序句柄
+        return program
+    }
+}
+```
+
+private fun readShaderSource(context: Context, resourceId: Int): String
+说一下context参数，Android上下文参数，用于访问应用资源。resourceId资源ID参数，指向raw资源目录中的着色器文件。
+### GLES是什么
+`GLES` 是 OpenGL for Embedded Systems 的缩写，通常直接叫做 `OpenGL ES`。一个专门为嵌入式设备设计的2D/3D图形渲染API，它是桌面版OpenGL的简化，轻量级版本，使其更适合移动设备有限的资源。
