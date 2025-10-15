@@ -261,7 +261,7 @@ private fun readShaderSource(context: Context, resourceId: Int): String
 ## 4.定义几何图形和绘制
 ### 简单了解计算机图形学(也称电脑图形学)
 简单地说，计算机图形学的主要研究内容就是研究如何在计算机中表示图形、以及利用计算机进行图形的计算、处理和显示的相关原理与算法。图形通常由点、线、面、体等几何元素和灰度、色彩、线型、线宽等非几何属性组成。从处理技术上来看，图形主要分为两类，一类是基于线条信息表示的，如工程图、等高线地图、曲面的线框图等，另一类是明暗图，也就是通常所说的真实感图形。
-### 顶点数据
+### 顶点数据的概念
 `顶点`：顶点是存储一系列基本绘图所需属性的基本元素，例如二维或三维空间中的点、或曲面上的多个点。在着色器中，与顶点相连的元素称为图元，图元内部应上色的区域称为片段，顶点的集合称为顶点组或顶点数组。[1]而在OpenGL中，顶点默认会包含位置、法向量、颜色、第二色彩、纹理坐标等属性[2]，而其可以透过着色器编程添加更多属性。
 
 计算机图形学中的顶点是一个包含了所有必要信息的`数据结构`，这些信息用于最终在屏幕上生成一个像素(片段)，一个顶点通常包含以下信息(不限于此)
@@ -284,3 +284,89 @@ GPU拿到一大堆这样的`顶点指令`(顶点着色器处理)，然后根据�
 3. 通用性：三角形是`原子图形`
    * 多边形分解：任何复杂的多边形（无论有多少条边）都可以被分解成一系列三角形，这个过程称为三角剖分。
    * 曲面近似：像球体、圆柱体、角色模型这样的曲面，也可以用无数个微小的三角形网格来近似模拟。三角形越多，模型表面就越光滑。
+
+### 定义几何图形数据并绘制
+1. 定义顶点数据
+2. 创建顶点缓冲区(直接内存缓冲区)
+```kotlin
+// 为OpenGl ES 创建直接内存缓冲区
+private val vertexBuffer: FloatBuffer =
+    // run 和 apply 使用上的选择：run的返回值是代码块的最后一行， apply的返回值是接收者本身(this)
+    ByteBuffer.allocateDirect(vertexData.size * 4).run {
+        order(ByteOrder.nativeOrder())
+        asFloatBuffer().apply {
+            put(vertexData)
+            position(0)
+        }
+    }
+```
+3. 定义着色器程序和相关句柄，可以根据需要添加更多的属性句柄(颜色，纹理，法线等)
+```kotlin
+private var program: Int = 0 // 存储顶点着色器与片段着色器链接形成的完整的着色器程序对象
+// 下面两个变量的作用都是“缓存关键标识” 确保CPU能正确的将数据(顶点坐标，颜色)传递给GPU
+// 不通过变量暂存的话，每次使用的时候都需要重新通过函数查询，效率低
+private var positionHandle: Int = 0
+private var colorHandle: Int = 0
+```
+
+着色器初始化流程
+1. 编译着色器
+```kotlin
+val vertexShader = ShaderHelper.compileVertexShader(context, R.raw.vertex_shader)
+val fragmentShader = ShaderHelper.compileFragmentShader(context, R.raw.fragment_shader)
+```
+2. 链接程序
+```kotlin
+program = ShaderHelper.linkProgram(vertexShader, fragmentShader)
+```
+3. 获取上面定义的属性句柄
+```kotlin
+positionHandle = GLES20.glGetAttribLocation(program, "a_Position")
+colorHandle = GLES20.glGetUniformLocation(program, "a_Color")
+```
+4. 清理着色器对象(程序链接之后就不需要了)
+```kotlin
+GLES20.glDeleteShader(vertexShader)
+GLES20.glDeleteShader(fragmentShader)
+```
+
+绘制流程
+1. 启动着色器程序
+```kotlin
+GLES20.glUseProgram(program)
+```
+2. 设置统一变量（颜色、变换矩阵等）
+```kotlin
+// 设置的是RGBA颜色， 前三个浮点数分别代表红 绿 蓝 最后一个是透明度。
+GLES20.glUniform4f(colorHandle, 1.0f, 0.0f, 0.0f, 1.0f)
+```
+3. 启用并设置顶点属性
+```kotlin
+GLES20.glEnableVertexAttribArray(positionHandle)
+
+// 绑定顶点数据
+// 每个参数的含义： 索引， 大小， 数据类型， 是否归一化， 步长， 数据指针
+GLES20.glVertexAttribPointer(
+    positionHandle, 3, GLES20.GL_FLOAT, false,
+    3 * 4, vertexBuffer
+)
+  // 设置顶点位置属性
+  glVertexAttribPointer(
+      0,              // 属性索引 (对应着色器中的 location = 0)
+      3,              // 每个顶点3个分量 (x, y, z) 可以的取值包括位置3(x,y,z) 颜色4(r,g,b,a) 纹理坐标2(u, v)
+      GL_FLOAT,       // 数据类型为浮点数 还要GL_INT GL_SHORT等
+      false,          // 不归一化 对于整数类型，是否自动归一化到[0, 1]获取[-1, 1]
+      0,              // 相邻两个顶点之间的字节偏移量，0代表数据紧密排列
+      vertexBuffer    // 指向顶点属性数据的缓冲区
+  );
+```
+4. 执行绘制命令
+```kotlin
+GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 3)
+```
+5. 禁用顶点属性（可选，但推荐）
+```kotlin
+GLES20.glDisableVertexAttribArray(positionHandle)
+```
+这个模板可以适用于任何2D/3D图形的绘制，只需要替换顶点数据和着色器即可。
+
