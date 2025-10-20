@@ -75,3 +75,45 @@ MVP矩阵变换是将3D空间中的顶点（Vertex）从模型空间（Model Spa
 Clip Space Position = P * V * M * Model Space Position
 * 将三个矩阵相乘，组合成一个 MVP 矩阵，然后与顶点坐标相乘
 * 矩阵乘法的顺序是从右向左的。先进行模型变换（M），然后进行观察变换（V），最后进行投影变换（P）。
+### MVP矩阵变换的使用(缩放变换)
+1. 定义矩阵
+```kotlin
+private var matrixHandle: Int = 0  // 矩阵句柄
+
+private val modelMatrix = FloatArray(16)       // 模型矩阵
+private val viewMatrix = FloatArray(16)        // 观察矩阵，对应2D纹理来说可以不需要观察矩阵
+private val projectionMatrix = FloatArray(16)  // 投影矩阵
+private val mvpMatrix = FloatArray(16)         // 最终MVP矩阵
+```
+2. 初始化矩阵
+```kotlin
+matrixHandle = GLES20.glGetUniformLocation(program, "u_MVPMatrix")
+
+Matrix.setIdentityM(modelMatrix, 0)
+Matrix.setIdentityM(viewMatrix, 0)
+Matrix.setIdentityM(projectionMatrix, 0)
+Matrix.setIdentityM(mvpMatrix, 0)
+```
+3. 设置MVP矩阵  参数：位置句柄 数量 是否转置 矩阵数据 偏移量
+```kotlin
+GLES20.glUniformMatrix4fv(matrixHandle, 1, false, mvpMatrix, 0)
+```
+4. 设置矩阵
+```kotlin
+例：设置模型矩阵 设置正交投影矩阵
+Matrix.scaleM(modelMatrix, 0, 1.0f, scaleY, 1.0f)
+Matrix.scaleM(modelMatrix, 0, scaleX, 1.0f, 1.0f)
+
+// 设置正交投影矩阵（适合2D渲染）
+val left = -1.0f
+val right = 1.0f
+val bottom = -1.0f
+val top = 1.0f
+val near = -1.0f
+val far = 1.0f
+Matrix.orthoM(projectionMatrix, 0, left, right, bottom, top, near, far)
+```
+5. 计算MVP矩阵
+```kotlin
+Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, modelMatrix, 0)
+```
