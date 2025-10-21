@@ -295,7 +295,7 @@ private fun readShaderSource(context: Context, resourceId: Int): String
 
 
 ### GLES是什么
-`GLES` 是 OpenGL for Embedded Systems 的缩写，通常直接叫做 `OpenGL ES`。一个专门为嵌入式设备设计的2D/3D图形渲染API，它是桌面版OpenGL的简化，轻量级版本，使其更适合移动设备有限的资源。
+`GLES` 是 `OpenGL for Embedded Systems` 的缩写，通常直接叫做 `OpenGL ES`。一个专门为嵌入式设备设计的2D/3D图形渲染API，它是桌面版OpenGL的简化，轻量级版本，使其更适合移动设备有限的资源。
 
 ## 4.定义几何图形和绘制
 ### 简单了解计算机图形学(也称电脑图形学)
