@@ -9,7 +9,11 @@
 * 传递矩阵并刷新画面
 
 ## 集成手势检测器
-Android中封装好了两种常用的手势检测器，`GestureDetector` 是一个**通用型**手势检测器，而 `ScaleGestureDetector` 是一个**专精型**手势检测器，专门用于处理缩放（双指 pinch）手势。
-缩放操作可以通过`ScaleGestureDetector`实现
+Android中封装好了两种常用的手势检测器，
+1. `GestureDetector` 是一个**通用型**手势检测器，
+2. `ScaleGestureDetector` 是一个**专精型**手势检测器，专门用于处理缩放（双指 pinch）手势。核心概念如下：
+   * 缩放因子：`getScaleFactor()` 方法返回一个浮点数，表示相对于上一次事件的比例变化。例：1.2表达放大20%，0.8%表示缩小20%
+   * 焦点：getFocusX() 和 getFocusY() 返回当前两个手指中心的坐标，通常围绕这个点进行缩放操作，用户体验更好。
+   * 手势声明周期：onScaleBegin(手势开始) -> （多次）onScale(缩放进行中) -> onScaleEnd(手势结束)
 ### ScaleGestureDetector
 用于检测缩放手势，即双指捏合或者扩张的手势。它提供了 onScale() 和 onScaleBegin() 等回调方法来处理缩放手势的开始、进行中和结束时的事件。
