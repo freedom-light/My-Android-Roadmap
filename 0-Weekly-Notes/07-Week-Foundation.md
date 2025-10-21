@@ -172,10 +172,46 @@ EGL14.eglTerminate(eglDisplay)
 GLSL（全称 OpenGL Shading Language）是一种专门为图形渲染编程设计的着色器语言，主要用于编写运行在 GPU（图形处理器）上的 “着色器程序”，控制图形渲染的各个阶段（如顶点变换、像素颜色计算等）。
 
 GLSL使用类型限定符而不是通过读取和写入操作来管理输入和输出。着色器主要分为顶点着色器（Vertex Shader）和片段着色器（Fragment Shader）两部分。
+|GLSL关键字|作用|
+|:--:|:--:|
+|uniform|用于声明全局常量变量，表示该变量的值由 CPU 端（应用程序代码）传递到 GPU 端（着色器），且在一次绘制过程中保持不变。|
+|varying|用于在顶点着色器和片段着色器之间传递插值数据。顶点着色器中对其赋值后，GPU 会在光栅化阶段对其进行插值计算，片段着色器中可以接收插值后的结果（如顶点颜色、纹理坐标等）。|
+|vec2|表示一个包含 2 个浮点数的向量，常用于存储 2D 坐标（如纹理坐标uv、2D顶点位置等）。|
+|sampler2D|表示 2D 纹理采样器，用于在片段着色器中访问 2D 纹理数据。通过它结合纹理坐标，可以从绑定的纹理中采样获取像素颜色。|
+|attribute|用于声明顶点属性变量，仅在顶点着色器中有效。用于接收 CPU 端传递的每个顶点的独立数据（如顶点位置、颜色、法向量等），每个顶点对应一个值。|
+|mat4|表示一个 4x4 的浮点数矩阵，常用于存储 3D 图形变换（如模型矩阵、视图矩阵、投影矩阵等），通过矩阵乘法组合多个变换，实现顶点坐标的空间转换。|
 
 在OpenGL程序中使用着色器有一套固定的流程，清楚每个函数是干什么的就好，不需要太纠结这个事情。
 
 1. 顶点着色程序的源代码和片段着色程序的源代码分别写入到一个文件里（或字符数组）里面，一般顶点着色器源码文件后缀为.vert，片段着色器源码文件后缀为.frag；
+```kotlin
+uniform mat4 u_MVPMatrix;
+attribute vec4 a_Position; // 声明顶点属性变量
+attribute vec2 a_TexCoord; // 声明纹理坐标属性变量
+// vec2 代表二维向量的意思， vec4代表四维向量的意思
+varying vec2 v_TexCoord; // 用于从顶点着色器向片段着色器传递数据
+
+// 定义主函数，每个顶点执行一次
+void main() {
+    gl_Position = u_MVPMatrix * a_Position;
+    v_TexCoord = a_TexCoord; // 将纹理坐标传递给片段着色器
+}
+```
+```kotlin
+precision mediump float;
+
+varying vec2 v_TexCoord; // 纹理坐标变量
+uniform sampler2D u_Texture; // uniform表示是所有片段共享的数据(如图片纹理)
+                             // sampler2D 是2D纹理采样器
+// 主函数每个片段(像素)执行一次
+void main() {
+    // 使用texture2D函数从纹理u_Texture中采样颜色，采样位置由v_TexCoord决定
+    // 最后赋值给gl_FragColor内置变量(片段颜色)
+    // 由于纹理坐标系和图片坐标系的y是反的，所以如果不做额外操作的话，图片加载为纹理就是反的，这里处理一下使其回正，并不是你写的问题。
+    vec2 flippedTexCoord = vec2(v_TexCoord.x, 1.0 - v_TexCoord.y);
+    gl_FragColor = texture2D(u_Texture, flippedTexCoord);
+}
+```
 2. 使用glCreateshader()分别创建一个顶点着色器对象和一个片段着色器对象；
 3. 使用glShaderSource()分别将顶点/片段着色程序的源代码字符数组绑定到顶点/片段着色器对象上；
 4. 使用glCompileShader()分别编译顶点着色器和片段着色器对象（最好检查一下编译的成功与否）；
@@ -254,7 +290,10 @@ object ShaderHelper {
 ```
 
 private fun readShaderSource(context: Context, resourceId: Int): String
+
 说一下context参数，Android上下文参数，用于访问应用资源。resourceId资源ID参数，指向raw资源目录中的着色器文件。
+
+
 ### GLES是什么
 `GLES` 是 OpenGL for Embedded Systems 的缩写，通常直接叫做 `OpenGL ES`。一个专门为嵌入式设备设计的2D/3D图形渲染API，它是桌面版OpenGL的简化，轻量级版本，使其更适合移动设备有限的资源。
 
