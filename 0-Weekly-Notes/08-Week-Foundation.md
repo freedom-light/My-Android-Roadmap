@@ -117,3 +117,36 @@ Matrix.orthoM(projectionMatrix, 0, left, right, bottom, top, near, far)
 ```kotlin
 Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, modelMatrix, 0)
 ```
+
+## 从相册选取图片
+### 注册相册选择的结果回调
+1. 使用`registerForActivityResult`API 注册 Activity 结果回调
+```kotlin
+// 注册相册选择的结果回调
+private val pickImageLauncher = registerForActivityResult(
+    // 第一个参数：指定使用的合约类型
+    // 第二个参数：输出参数(包含返回的结果信息)尾随 Lambda 语法
+    ActivityResultContracts.StartActivityForResult()
+) { result ->
+    if (result.resultCode == RESULT_OK) {
+        // Intent
+        val data: Intent? = result.data
+        data?.data?.let { uri ->
+            // 从URI加载Bitmap
+            val bitmap = loadBitmapFromUri(uri)
+            bitmap?.let {
+                setBitmap(it)
+            }
+        }
+    }
+}
+```
+2. 在特定逻辑下触发启动器
+```kotlin
+// 打开相册选择图片
+private fun openGallery() {
+    val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+    pickImageLauncher.launch(intent)
+}
+```
+然后就可以在启动器内处理相关逻辑。
