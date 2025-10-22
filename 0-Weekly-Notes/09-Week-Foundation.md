@@ -26,3 +26,56 @@ Android中封装好了两种常用的手势检测器，
 * **双指缩放**来放大缩小图片
 
 这时，你就需要同时使用这两个检测器。
+
+对于**平移**和**缩放**操作，在View中操作矩阵，之后将矩阵传入底层，底层直接进行矩阵乘法即可。不建议使用保存原始状态的方式。
+
+对于对图片的操作，将屏幕数据同比转换为OpenGL数据，不要使用直接写定值的方式。
+```kotlin
+// 缩放手势监听器
+private inner class ScaleListener: ScaleGestureDetector.SimpleOnScaleGestureListener(){
+    override fun onScale(detector: ScaleGestureDetector): Boolean {
+        val scaleFactor = detector.scaleFactor
+        
+        // 以手势焦点为中心进行缩放
+        val focusX = detector.focusX
+        val focusY = detector.focusY
+        // 将屏幕焦点坐标转换为 OpenGL 坐标
+        val glFocusX = (focusX / width) * 2 - 1
+        val glFocusY = 1 - (focusY / height) * 2
+        Log.d("MyGLSurfaceView", "${glFocusX}, ${glFocusY}")
+        // 应用以焦点为中心的缩放
+        applyScaleAroundPoint(scaleFactor, glFocusX, glFocusY)
+        updateTransformation()
+        return true
+    }
+}
+```
+```kotlin
+// 平移手势监听器
+private inner class GestureListener: GestureDetector.SimpleOnGestureListener(){
+    override fun onScroll(
+        e1: MotionEvent?,
+        e2: MotionEvent,
+        distanceX: Float,
+        distanceY: Float
+    ): Boolean {
+        // 将屏幕"距离"转换为 OpenGL 坐标"距离"
+        val glDistanceX = (distanceX / width) * 2
+        val glDistanceY = (distanceY / height) * 2
+        // 考虑当前缩放级别调整平移灵敏度
+        val currentScale = getCurrentScale()
+        val adjustedDistanceX = glDistanceX / currentScale
+        val adjustedDistanceY = glDistanceY / currentScale
+        // 使用 Matrix 进行平移
+        Matrix.translateM(modelMatrix, 0, -adjustedDistanceX, adjustedDistanceY, 0f)
+        updateTransformation()
+        return true
+    }
+    override fun onDoubleTap(e: MotionEvent): Boolean {
+        // 重置变换矩阵
+        Matrix.setIdentityM(modelMatrix, 0)
+        updateTransformation()
+        return true
+    }
+}
+```
