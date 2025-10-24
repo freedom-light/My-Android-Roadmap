@@ -168,6 +168,24 @@ EGL14.eglDestroyContext(eglDisplay, eglContext)
 EGL14.eglTerminate(eglDisplay)
 ```
 ## 3.创建基础着色器
+### 着色器
+片段着色器和顶点着色器一样都是运行在 `GPU` 上的程序，片段着色器将顶点着色器输出的片段作为输入，并负责输出每个片段的颜色。
+#### 内建特殊变量
+| 变量 | 描述 |
+|------|------|
+| `gl_FragCoord` | 片段着色器中的一个只读变量，保存了片段的窗口相对坐标(x,y,z,1/w)。可以使用窗口坐标作为某个随机噪声贴图纹理读取的偏移量，噪声贴图的值用于旋转阴影贴图的过滤核心，这种技术用于减少阴影贴图的锯齿失真。 |
+| `gl_FrontFacing` | 片段着色器中的一个只读的布尔变量，片段是正面图元时为 true，否则为 false。 |
+| `gl_PointCoord` | 一个只读变量，可以在渲染点精灵时使用。保存了点精灵的纹理坐标。 |
+| `gl_FragDepth` | 一个只写输出变量，会覆盖片段的固定功能深度值，应该谨慎使用，因为它可能禁用许多 GPU 的深度优化。 |
+#### 内建常量
+| 类型 | 名称 | 最小值 | 描述 |
+|------|------|--------|------|
+| `const mediump int` | `gl_MaxFragmentInputVectors` | 15 | 片段着色器输入的最大数量 |
+| `const mediump int` | `gl_MaxTextureImageUnits` | 16 | 可用纹理图像单元的最大数量 |
+| `const mediump int` | `gl_MaxFragmentUniformVectors` | 224 | 片段着色器中可以使用的 vec4 统一变量的最大数量 |
+| `const mediump int` | `gl_MaxDrawBuffers` | 4 | 多重渲染目标（MRT）的最大支持数量 |
+| `const mediump int` | `gl_MinProgramTexelOffset` | -8 | 内建 ESSL 函数 texture*Offset() 偏移参数支持的最小值 |
+| `const mediump int` | `gl_MaxProgramTexelOffset` | 7 | 内建 ESSL 函数 texture*Offset() 偏移参数支持的最大值 |
 ### GLSL是什么
 GLSL（全称 OpenGL Shading Language）是一种专门为图形渲染编程设计的着色器语言，主要用于编写运行在 GPU（图形处理器）上的 “着色器程序”，控制图形渲染的各个阶段（如顶点变换、像素颜色计算等）。
 
