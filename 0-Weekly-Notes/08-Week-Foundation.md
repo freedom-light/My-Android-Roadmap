@@ -62,6 +62,20 @@
 
 修改渲染逻辑，不再采用死循环等待信号触发的方式，将渲染消息也加入消息循环队列中。
 
+## 图片处理相关各种坐标系
+### 图片坐标系/纹理坐标系/NDC坐标系
+**图片坐标系**：x轴向右，y轴向下，x和y的取值范围都是0到对应的图片宽高
+
+<img width="406" height="554" alt="image" src="https://github.com/user-attachments/assets/01a71037-7bb1-4a6f-b33f-9c2280a95b26" />
+
+**纹理坐标系**：x轴向右，y轴向上，x和y的取值范围都是0到1
+
+<img width="418" height="584" alt="image" src="https://github.com/user-attachments/assets/5049f3b0-538a-450f-93fd-a49dffc95e21" />
+
+NDC坐标系：x轴向右，y轴向上，x和y的取值范围都是-1到1
+
+<img width="328" height="484" alt="image" src="https://github.com/user-attachments/assets/5a2d8633-0e03-457e-89d0-e43045a97b2e" />
+
 ## MVP矩阵变换
 MVP矩阵变换是将3D空间中的顶点（Vertex）从模型空间（Model Space） 最终转换到裁剪空间（Clip Space） 的一系列矩阵乘法运算。这个过程的目的是为了确定3D物体在2D屏幕上的哪个位置、以何种大小和形态进行绘制。
 
