@@ -319,8 +319,8 @@ private fun readShaderSource(context: Context, resourceId: Int): String
 2. 顶点着色器 (Vertex Shader)
 3. 图元装配 (Primitive Assembly)
 4. 光栅化 (Rasterization)
-5. 片元着色器 (Fragment Shader)
-6. 片元测试与混合 (Per-Fragment Operations)
+5. 片段着色器 (Fragment Shader)
+6. 片段测试与混合 (Per-Fragment Operations)
 7. 帧缓冲 (Frame Buffer)
 
 ## 4.定义几何图形和绘制
