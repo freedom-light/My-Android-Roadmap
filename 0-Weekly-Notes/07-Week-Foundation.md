@@ -315,13 +315,13 @@ private fun readShaderSource(context: Context, resourceId: Int): String
 ### GLES是什么
 `GLES` 是 `OpenGL for Embedded Systems` 的缩写，通常直接叫做 `OpenGL ES`。一个专门为嵌入式设备设计的2D/3D图形渲染API，它是桌面版OpenGL的简化，轻量级版本，使其更适合移动设备有限的资源。
 ### OpenGL ES 渲染管线流程
-1️⃣ 顶点数据 (Vertex Data)
-2️⃣ 顶点着色器 (Vertex Shader)
-3️⃣ 图元装配 (Primitive Assembly)
-4️⃣ 光栅化 (Rasterization)
-5️⃣ 片元着色器 (Fragment Shader)
-6️⃣ 片元测试与混合 (Per-Fragment Operations)
-7️⃣ 帧缓冲 (Frame Buffer)
+1. 顶点数据 (Vertex Data)
+2. 顶点着色器 (Vertex Shader)
+3. 图元装配 (Primitive Assembly)
+4. 光栅化 (Rasterization)
+5. 片元着色器 (Fragment Shader)
+6. 片元测试与混合 (Per-Fragment Operations)
+7. 帧缓冲 (Frame Buffer)
 
 ## 4.定义几何图形和绘制
 ### 简单了解计算机图形学(也称电脑图形学)
