@@ -324,7 +324,7 @@ private fun readShaderSource(context: Context, resourceId: Int): String
     * 用户创建的帧缓冲区（ID > 0）
     * 用于离屏渲染
     * 渲染结果保存在附加的纹理中
-2. 
+2. GLES20.glViewport(x, y, width, height)函数，设置OpenGL渲染的可视区域，**在表面尺寸改变时必须调用**否则渲染会变形或显示不全。
 ### OpenGL ES 渲染管线流程
 1. 顶点数据 (Vertex Data)
 2. 顶点着色器 (Vertex Shader)
