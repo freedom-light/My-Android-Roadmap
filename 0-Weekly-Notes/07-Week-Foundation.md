@@ -334,10 +334,11 @@ private fun readShaderSource(context: Context, resourceId: Int): String
 1. 顶点数据 (Vertex Data)
 2. 顶点着色器 (Vertex Shader)
 3. 图元装配 (Primitive Assembly)
-4. 光栅化 (Rasterization)
-5. 片段着色器 (Fragment Shader)
-6. 片段测试与混合 (Per-Fragment Operations)
-7. 帧缓冲 (Frame Buffer)
+4. 几何着色器
+5. 光栅化 (Rasterization)
+6. 片段着色器 (Fragment Shader)
+7. 片段测试与混合 (Per-Fragment Operations)
+8. 帧缓冲 (Frame Buffer)
 
 ## 4.定义几何图形和绘制
 ### 简单了解计算机图形学(也称电脑图形学)
