@@ -314,6 +314,17 @@ private fun readShaderSource(context: Context, resourceId: Int): String
 
 ### GLES是什么
 `GLES` 是 `OpenGL for Embedded Systems` 的缩写，通常直接叫做 `OpenGL ES`。一个专门为嵌入式设备设计的2D/3D图形渲染API，它是桌面版OpenGL的简化，轻量级版本，使其更适合移动设备有限的资源。
+#### GLES中的详细知识
+1. `GLES20.GL_FRAMEBUFFER`是 OpenGL ES 2.0 中的一个常量，表示**帧缓冲区目标**。GL_FRAMEBUFFER 代表默认的帧缓冲区目标，用于同时进行读取和写入操作的帧缓冲区绑定。
+  * 默认帧缓冲区
+    * ID 为 0
+    * 代表屏幕显示
+    * 调用 glBindFramebuffer(GL_FRAMEBUFFER, 0) 就切换回屏幕渲染
+  * 自定义帧缓冲区
+    * 用户创建的帧缓冲区（ID > 0）
+    * 用于离屏渲染
+    * 渲染结果保存在附加的纹理中
+2. 
 ### OpenGL ES 渲染管线流程
 1. 顶点数据 (Vertex Data)
 2. 顶点着色器 (Vertex Shader)
