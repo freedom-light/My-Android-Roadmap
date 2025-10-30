@@ -89,8 +89,24 @@ MVP矩阵变换是将3D空间中的顶点（Vertex）从模型空间（Model Spa
 gl_Position = P * V * M * vertex_position
 * 将三个矩阵相乘，组合成一个 MVP 矩阵，然后与顶点坐标相乘
 * 矩阵乘法不满足交换律，**顺序绝对不能颠倒**
-* 矩阵乘法的顺序是**从右向左**的。先进行模型变换（M），然后进行观察变换（V），最后进行投影变换（P） 对应矩阵乘法顺序为 Projection × View × Model
+* 矩阵乘法的顺序是**从右向左**的。
 * 顶点是列向量时，变换顺序是 MVP 从右到左相乘；若顶点是行向量，则顺序相反（但图形学中**通常默认列向量**）
+
+正确的计算顺序如下：
+```kotlin
+// 更新MVP矩阵
+private fun updateMVPMatrix() {
+    val tempMatrix1 = FloatArray(16)
+    val tempMatrix2 = FloatArray(16)
+    // 正确的计算顺序：Projection × View × Model × AspectRatio
+    // 1. 先合并宽高比和模型变换 (Model × AspectRatio)
+    Matrix.multiplyMM(tempMatrix1, 0, modelMatrix, 0, aspectRatioMatrix, 0)
+    // 2. 再合并视图矩阵 (View × (Model × AspectRatio))
+    Matrix.multiplyMM(tempMatrix2, 0, viewMatrix, 0, tempMatrix1, 0)
+    // 3. 最后合并投影矩阵 (Projection × (View × Model × AspectRatio))
+    Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, tempMatrix2, 0)
+}
+```
 ### MVP矩阵变换的使用(缩放变换)
 1. 定义矩阵
 ```kotlin
