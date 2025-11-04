@@ -400,6 +400,7 @@ recycler.adapter = adapter
 ## 5.小demo
 ### 5.1.完成一个「名片展示 App」：包含顶部头像、姓名、简介
 <img width="213" height="173" alt="image" src="https://github.com/user-attachments/assets/423094b1-79e2-4786-8cbd-bfdce8d0c48a" />
+
 ### 5.2.写一个「联系人列表 Demo」：用RecyclerView 展示一组名字，点击后弹 Toast 提示。
 
 ## 6.遇到的问题
