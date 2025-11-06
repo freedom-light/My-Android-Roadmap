@@ -28,5 +28,40 @@ LUT全称LookUpTable，也称为颜色查找表，它代表的是一种映射关
    * 回收Bitmap, **一旦数据上传到 GPU，Bitmap 对象就不再需要了**
    * 返回纹理ID
 
+#### 通过保存bitmap使后续需要加载纹理时提高效率
+1. 定义缓存路径
+```kotlin
+private const val CACHE_DIR_NAME = "lut_bitmaps" // 在应用缓存目录下的子目录名称
+```
+2. 生成缓存文件名
+```kotlin
+val cacheDir = File(context.cacheDir, CACHE_DIR_NAME)
+if (!cacheDir.exists()) {
+    cacheDir.mkdirs() // 创建缓存目录
+}
+// 将 .cube 后缀替换为 .png 作为缓存文件名
+// Kotlin 字符串扩展函数，用于替换字符串中的子串
+val cacheFileName = originalFileName.replace(".cube", ".png", ignoreCase = true)
+return File(cacheDir, cacheFileName)
+```
+3. 检查缓存
+   * 存在：从**硬盘**加载Bitmap,之后直接转为OpenGL纹理
+   * 不存在：走正常的逻辑，解析.cube文件，生成Bitmap
+4. 保存缓存：将生成的Bitmap保存在硬盘中，方便下次使用
+```kotlin
+val cacheFile = getCacheFile(context, originalFileName)
+// 将 bitmap 的像素数据以 PNG 格式写入到 out (即 cacheFile) 中
+try {                          //use 块执行完毕后资源 (FileOutputStream) 会被自动关闭
+    FileOutputStream(cacheFile).use { out ->
+        // 使用PNG格式保存，无损压缩
+        // 用于将 Bitmap 的图像数据压缩并写入到指定的输出流中
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+        Log.d(TAG, "Bitmap saved to cache: ${cacheFile.absolutePath}")
+    }
+} catch (e: Exception) {
+    Log.e(TAG, "Failed to save bitmap to cache: ${cacheFile.absolutePath}", e)
+}
+```
+
 
 
