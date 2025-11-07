@@ -167,6 +167,8 @@ EGL14.eglDestroySurface(eglDisplay, eglSurface)
 EGL14.eglDestroyContext(eglDisplay, eglContext)
 EGL14.eglTerminate(eglDisplay)
 ```
+
+这里特别注意的是，当**执行完eglMakeCurrent，EGLContext绑定到当前线程和表面之后**，才能安全地调用OpenGL ES API，否则会崩溃。
 ## 3.创建基础着色器
 ### 着色器
 片段着色器和顶点着色器一样都是运行在 `GPU` 上的程序，片段着色器将顶点着色器输出的片段作为输入，并负责输出每个片段的颜色。
