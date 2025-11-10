@@ -56,6 +56,14 @@ class  MyGLSurfaceView(context: Context) : SurfaceView(context), SurfaceHolder.C
 系统通知：Surface创建好了，就会执行你注册的回调函数，surfaceCreated内部的逻辑，你就可以进行渲染等操作了。
 
 ## 2.手动搭建 EGL 环境
+### OpenGL是什么
+OpenGL是一个跨语言，跨平台的高级3D图形应用程序编程接口
+#### OpenGL如何做到跨平台，跨语言
+并不是OpenGL进行了大量适配（适配平台，适配各种高级语言），OpenGL制定了一套标准，并且底层由C ABI(C语言应用程序二进制接口)编写，制定完标准后由各大显卡厂商和各种高级语言来做适配。
+
+例如OpenGL是联合国，各个操作系统是成员国，显卡厂商就是各个成员国的翻译官，起到一个中间层作用。
+
+再例如C ABI是联合国，各个高级语言是成员国，JNI,ctypes 或 CFFI 就是各个成员国的翻译官，起到一个中间层作用。
 ### EGL是什么，OpenGL、EGL与SurfaceView的关系
 首先EGL是什么，简单说它是一个用来给OpenGL ES提供绘制界面的接口。
 
