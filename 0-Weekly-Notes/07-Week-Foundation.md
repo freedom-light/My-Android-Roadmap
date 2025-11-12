@@ -33,9 +33,13 @@ SurfaceView 通过`双缓冲`和`独立表面`的机制来解决上述问题：
 ### 创建自定义线程
 实现 SurfaceHolder.Callback → surfaceCreated() → 启动渲染线程 → surfaceChanged() → 渲染循环 → surfaceDestroyed() → 停止线程
 ```kotlin
-class  MyGLSurfaceView(context: Context) : SurfaceView(context), SurfaceHolder.Callback {
+class MyGLSurfaceView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0
+) : SurfaceView(context, attrs, defStyle), SurfaceHolder.Callback {
     private var renderThread: Thread? = null
-    private var isRunning = false
+
     init {
         holder.addCallback(this)
     }
