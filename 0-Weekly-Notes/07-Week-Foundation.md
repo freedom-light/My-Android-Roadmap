@@ -50,7 +50,10 @@ class MyGLSurfaceView @JvmOverloads constructor(
     override fun surfaceDestroyed(holder: SurfaceHolder)  {...}
 }
 ```
-类中变量的作用`renderThread`
+类中两个变量的作用`renderThread`和`isRunning`.
+* `isRunning`用于控制渲染线程的生命周期，`SurfaceView`的渲染线程需要与 Activity/Fragment 的生命周期同步
+  * 当Activity进入后台时，必须停止渲染降低功耗
+  * 当Activity进入前台时，需要开始重新渲染
 * `renderThread`是承载OpenGL渲染任务的“工作线程”，使用可空类型是因为线程会在surface销毁时被释放。
 通过SurfaceHolder注册回调的方式实现发布-订阅模式。因为Surface的生命周期是有系统层面管理的，通过回调机制，我注册回调，来信息了之后系统通知我，之后我执行自己的逻辑。
 
