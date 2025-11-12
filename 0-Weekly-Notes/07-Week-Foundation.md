@@ -140,7 +140,7 @@ if(!EGL14.eglChooseConfig(
 }
 val config = configs[0] ?: throw RuntimeException("No EGLConfig found")
 ```
-4. 接下来我们需要创建OpenGl的上下文环境 `EGLContext` 实例，这里值得留意的是，OpenGl的任何一条指令都是必须在自己的OpenGl上下文环境中运行，我们可以通过`eglCreateContext()`方法来构建上下文环境：`eglCreateContext`中的第三个参数可以传入一个`EGLContext`类型的变量，改变量的意义是可以与正在创建的上下文环境共享OpenGl资源，包括纹理ID,FrameBuffer以及其他Buffer资源。如果没有的话可以填写Null.
+4. 接下来我们需要创建OpenGl的上下文环境 `EGLContext` 实例，这里值得留意的是，OpenGL的任何一条指令都是必须在自己的OpenGL上下文环境中运行，我们可以通过`eglCreateContext()`方法来构建上下文环境：`eglCreateContext`中的第三个参数可以传入一个`EGLContext`类型的变量，改变量的意义是可以与正在创建的上下文环境共享OpenGL资源，包括纹理ID,FrameBuffer以及其他Buffer资源。如果没有的话可以填写Null.
 ```kotlin
 val contextAttribs = intArrayOf(
     EGL14.EGL_CONTEXT_CLIENT_VERSION, 2,
@@ -151,7 +151,7 @@ if(eglContext == EGL14.EGL_NO_CONTEXT){
     throw RuntimeException("eglContext create error")
 }
 ```
-5. 通过上面四步,获取 OpenGl 上下文之后，说明EGL和OpenGl ES端的环境已经搭建完毕。下面的步骤是如何将EGL和设备屏幕连接起来，使用EGLSurface，通过EGL库提供eglCreateWindowSurface可以创建一个实际可以显示的surface.当然，如果需要离线的surface，我们可以通过`eglCreatePbufferSurface`创建。`eglCreateWindowSurface()`
+5. 通过上面四步,获取 OpenGL 上下文之后，说明EGL和OpenGL ES端的环境已经搭建完毕。下面的步骤是如何将EGL和设备屏幕连接起来，使用EGLSurface，通过EGL库提供eglCreateWindowSurface可以创建一个实际可以显示的surface.当然，如果需要离线的surface，我们可以通过`eglCreatePbufferSurface`创建。`eglCreateWindowSurface()`
 ```kotlin
 val surfaceAttribs = intArrayOf(EGL14.EGL_NONE)
 eglSurface = EGL14.eglCreateWindowSurface(eglDisplay, config, surfaceHolder.surface, surfaceAttribs, 0)
@@ -159,7 +159,7 @@ if(eglSurface == EGL14.EGL_NO_SURFACE){
     throw RuntimeException("eglSurfacae create error")
 }
 ```
-6. 通过上面的步骤，EGL的准备工作做好了，接下来的内容是如何在创建好的EGL环境下工作。首先OpenGl ES 的渲染必须新开一个线程，并为该线程绑定显示设备及上下文环境（Context）。因为前面有说过OpenGl指令必须要在其上下文环境中才能执行。所以我们首先要通过 `eglMakeCurrent()` 方法来绑定该线程的显示设备及上下文。
+6. 通过上面的步骤，EGL的准备工作做好了，接下来的内容是如何在创建好的EGL环境下工作。首先OpenGL ES 的渲染必须新开一个线程，并为该线程绑定显示设备及上下文环境（Context）。因为前面有说过OpenGL指令必须要在其上下文环境中才能执行。所以我们首先要通过 `eglMakeCurrent()` 方法来绑定该线程的显示设备及上下文。
 ```kotlin
 if(!EGL14.eglMakeCurrent(eglDisplay, eglSurface, eglSurface, eglContext)){
     throw RuntimeException("eglMakeCurrent error")
