@@ -6,5 +6,7 @@
    * MVP变换影响的是物体在屏幕上的“占位”，后期处理（包括 LUT 和 Mask 混合）是在这个“占位”上进行的像素操作。
    * 因此，**MVP 变换必须在后期处理之前完成，并且这个变换要同时应用于原始图像和 Mask**。
 3. 混淆纹理坐标和屏幕坐标：v_TexCoord是光栅化阶段插值后的纹理坐标，此时这个纹理坐标已经受顶点影响进行调整了，如果 u_originTexture 和 u_Texture 都是贴在同一个经过 MVP 变换的几何体上，那么它们采样的纹理坐标是完全同步的。 它们会一起被缩放、平移。
-4. GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, targetFBO)：这一步将 targetFBO 绑定为当前活动的帧缓冲区。这意味着所有后续的绘制命令都会将像素数据写入到 targetFBO。而不是屏幕
+4. GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, targetFBO)：这一步将 targetFBO 绑定为当前活动的帧缓冲区。这意味着所有后续的绘制命令都会将像素数据写入到 targetFBO。而不是屏幕.
+5. 顶点坐标经过了MVP处理，导致屏幕坐标与纹理坐标无法对应。没有特别好的办法，需要自己将数据进行处理。
+6. 在进行坐标转换的时候，一般先把坐标转换为NDC坐标[-1,1], 因为OpenGL ES的渲染管线和矩阵变换都是基于NDC坐标系进行操作的，而不是直接基于归一化屏幕坐标系。
 
