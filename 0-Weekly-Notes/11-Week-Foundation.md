@@ -10,4 +10,24 @@
 5. 顶点坐标经过了MVP处理，导致屏幕坐标与纹理坐标无法对应。没有特别好的办法，需要自己将数据进行处理。
 6. 在进行坐标转换的时候，一般先把坐标转换为NDC坐标[-1,1], 因为OpenGL ES的渲染管线和矩阵变换都是基于NDC坐标系进行操作的，而不是直接基于归一化屏幕坐标系。
 7. 一般对于希望正确获取MVP变换之后的纹理坐标的方式是：**屏幕坐标 -> NDC坐标 -> 乘MVP逆矩阵 -> 世界坐标 -> 纹理的归一化坐标**，这个流程要熟悉，不一定都是严格按照这个顺序，但是先后顺序是确定的。
+8. 用户手势人性化处理：可以通过onTouchEvent(event: MotionEvent)的event.actionMasked进行处理，处理逻辑自己操作，模版如下：
+```kotlin
+when (event.actionMasked) {
+    MotionEvent.ACTION_DOWN -> {
+        // 第一个手指按下
+    }
+    MotionEvent.ACTION_POINTER_DOWN -> {
+        // 额外的手指按下（第二个、第三个...）
+    }
+    MotionEvent.ACTION_MOVE -> {
+        // 手指移动
+    }
+    MotionEvent.ACTION_UP -> {
+        // 最后一个手指抬起
+    }
+    MotionEvent.ACTION_POINTER_UP -> {
+        // 非最后一个手指抬起
+    }
+}
+```
 
