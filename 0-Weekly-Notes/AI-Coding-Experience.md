@@ -1,7 +1,7 @@
 **前提：本文记录使用AI Coding的经验，记录新人第一个接触AI Coding 碰到的任何问题**
 注：第一次使用的是cursor
 
-1. 安装时推荐配置：**IDE Layout**IDE Layout 是真正的“VS Code 式”经典布局，Agent Layout 更偏向于聊天。
+1. 安装时推荐配置：**IDE Layout**，IDE Layout 是真正的“VS Code 式”经典布局，Agent Layout 更偏向于聊天。
 2. Cursor是一个完全独立的软件，不是Android Studio的插件，在使用的时候只需把本地项目文件夹用Cursor打开就行。
 3. Agent的概念：Agent类似于一个生活在电脑里面的人，他可以和你对话，对你的需求进行任务拆分，并自己调用工具来完成任务。
 4. 在使用的时候同时打开Cursor 和 Android Studio, 在Cursor里面进行修改代码，然后save, 代码就会同步到Android Studio那边
