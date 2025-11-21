@@ -16,20 +16,23 @@
 
 
 # 沉淀文档
-对于简单的报错信息：
+### 对于简单的报错信息：
 ```text
 将下面的报错，转为成AI好理解的提示词，让AI解决BUG，要求不能通过“打补丁”的方式临时解决。
 ...(报错信息)
 ```
-对于从figma设计稿得到矢量图绘制UI界面
 
+### 对于从figma设计稿得到矢量图绘制UI界面
 ```text
 Figma Access Token:...(替换为自己的⚠️)
+
 首页无图片:
 https://www.figma.com/design/xxxxxxxxxx/V0.1?node-id=xxxx-xxxx&m=dev(替换为自己的⚠️)
-...
+...(替换为自己的⚠️)
+
 使用我提供的 Figma Personal Access Token 和精确的 Dev Mode 链接，立即获取完整设计数据。
 要求（一次性全部完成，禁止任何打补丁）
+【矢量图标导出规则 - 最严格部分，缺一不可】
 1. 使用 Figma REST API（Files + Images Export）完整读取当前 node-id 对应的 Frame
 2. 提取以下所有内容（必须 100% 来自这个 Frame）：
    - 所有矢量图标的完整 SVG 路径数据
@@ -38,26 +41,24 @@ https://www.figma.com/design/xxxxxxxxxx/V0.1?node-id=xxxx-xxxx&m=dev(替换为�
    - 层级关系、Auto Layout 约束、背景色、圆角、阴影
    - 文字的字体、大小、颜色、行高
 3. 必须导出所有矢量图标为 Android VectorDrawable (.xml)：
-   - 保留原始路径、fill、stroke、opacity
+   - 保留原始路径、fill、stroke、opacity、布尔运算
    - 文件名 = Figma 节点名小写下划线
    - 放入 res/drawable/
    - 禁止使用任何 Material Icons、系统图标、PNG、tint 替代
 4. 根据提取的尺寸和约束关系，一次性完整生成的状态布局，像素级一模一样
 5. 输出：
    - 所有导出的 drawable 文件名列表 + 对应 Figma 节点名(如果已经存在则跳过)
-   - 完整的布局 XML（如果对应的布局已经存在则调整，否则创建）
+   - 完整的布局 XML 文件（activity_xxx.xml 或 fragment_xxx.xml，如果已有同名布局则整体替换/调整）
    - 必要的 dimens.xml 更新
    - 真机验证结果：有图 ↔ 无图切换时页面高度无任何跳动
+
+你现在通过 Figma MCP（或我提供的 Personal Access Token + Dev Mode 链接）已成功加载当前设计稿的完整 JSON 数据。
+从此刻起，你生成任何 Android UI 代码的唯一来源就是这个 MCP JSON 或通过 Figma REST API 获取的精确数据。禁止任何凭记忆、凭经验、凭“差不多”、凭 Material Design 默认值的行为。一旦违反，直接重做全部。
+- 使用 View 系统 XML 布局（ConstraintLayout 优先），像素级 100% 还原 Figma（包括有图/无图状态下高度零跳动）
+- 所有图标使用 <ImageView android:src="@drawable/xxx" />，固定宽高 = Figma px 值（dp），无 wrap_content，无 scaleType，无 tint
+- 尺寸/间距全部提取到 dimens.xml（已存在则复用，新建则添加）
+- Auto Layout → 对应 ConstraintLayout 约束或 LinearLayout weights
+- 背景、圆角、阴影全部用 XML drawable 或 view 属性实现
+- 对应特别设置颜色的控件，清空主题系统默认色调干扰，app:backgroundTint="@null"
 ```
-```text
-现在你已经通过 MCP 成功加载了我的 Figma 设计稿。
-从现在开始，你生成任何 UI 代码的唯一数据来源就是当前 MCP JSON，禁止任何凭记忆、凭感觉、凭“差不多”的行为。
-具体要求（缺一不可，否则直接重做）：
-1. 所有图标必须使用 Figma 中的原始组件实例（Instance），包括：
-...
-2. 必须导出为 Android Vector Drawable（XML），不能用 PNG，不能用 Compose ImageVector 手写
-3. 必须 100% 保留 Figma 中的路径、填充颜色、stroke、布尔运算、opacity
-4. 必须把这些图标保存到 res/drawable/ 下，文件名严格等于 Figma 节点名称（小写 + 下划线）
-5. 所有图标大小必须严格等于 Figma 中的像素尺寸（24x24 就 24dp，20x20 就 20dp），不能写 wrap_content 或固定 24dp
-6. 有任何无法导出并转换为Android Vector Drawable的图标，必须详细告知我！！！
-```
+
