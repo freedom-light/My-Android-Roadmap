@@ -62,3 +62,73 @@ https://www.figma.com/design/xxxxxxxxxx/V0.1?node-id=xxxx-xxxx&m=dev(替换为�
 - 对应特别设置颜色的控件，清空主题系统默认色调干扰，app:backgroundTint="@null"
 ```
 
+# OpenSpec 工作流程概览
+
+## 基本流程（3 个阶段）
+1. 提出变更提案 → 2. 获得批准 → 3. 实施变更
+
+## 详细步骤
+
+### 阶段 1：创建变更提案
+当你想要添加功能或进行更改时：
+
+**步骤 1.1：向 AI 提出需求**  
+固定句式（中英文皆可）：
+"I want to add [功能名称]. Please create an OpenSpec change proposal for this feature"  
+例如：  
+- "I want to add a brightness adjustment feature. Please create an OpenSpec change proposal"  
+- "我想添加亮度调节功能，请创建一个 OpenSpec 变更提案"
+
+**步骤 1.2：AI 创建提案**  
+AI 会按照 OpenSpec 格式创建提案，包括：  
+- Description（描述）：功能说明  
+- Motivation（动机）：为什么需要  
+- Proposed Changes（变更内容）：具体改动  
+- Technical Details（技术细节）：架构考虑、依赖等  
+- Testing（测试）：如何测试  
+
+**步骤 1.3：AI 对照项目规则检查**  
+AI 会确保提案：  
+- ✅ 遵循 .cursorrules 中的所有规则  
+- ✅ 使用资源文件（无硬编码）  
+- ✅ 遵循 RenderChain 架构（如果相关）  
+- ✅ 使用 Room 进行数据持久化（如果相关）  
+- ✅ 匹配 Figma 设计（如果 UI 相关）  
+- ✅ 支持 Undo/Redo 和预设（如果适用）
+
+### 阶段 2：审查和批准
+
+**步骤 2.1：你审查提案**  
+- 检查是否符合项目约定  
+- 验证是否符合你的需求  
+- 如有需要，要求澄清或修改  
+
+**步骤 2.2：批准提案**  
+如果满意，回复：  
+"Go" 或 "执行"  
+
+**重要**：在你说 "Go" 之前，AI 不会进行任何代码更改。
+
+### 阶段 3：实施变更
+获得批准后，AI 会：
+
+**步骤 3.1：规划**  
+- 如果是主要功能，在 tasks/tasks-项目管理功能.md 中创建任务列表  
+- 将工作分解为子任务  
+- 标记任务状态：[ ]（待处理）或 [x]（已完成）
+
+**步骤 3.2：实施**  
+- 遵循项目结构和约定  
+- 按提案创建/更新文件  
+- 确保所有资源在正确的文件中  
+- 遵循架构模式
+
+**步骤 3.3：验证**  
+- 检查 lint 错误  
+- 对照 Figma 设计验证（如果是 UI）  
+- 测试功能  
+- 更新任务列表的完成状态
+
+### 阶段 4 归档
+- 功能已全部实现，真机验证通过，无 lint 错误，无 Figma 偏差。
+请更新任务状态为全部完成并归档。
