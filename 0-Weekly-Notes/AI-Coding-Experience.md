@@ -77,7 +77,7 @@ https://www.figma.com/design/xxxxxxxxxx/V0.1?node-id=xxxx-xxxx&m=dev(替换为�
 "I want to add [功能名称]. Please create an OpenSpec change proposal for this feature"  
 例如：  
 - "I want to add a brightness adjustment feature. Please create an OpenSpec change proposal"  
-- "我想添加亮度调节功能，请创建一个 OpenSpec 变更提案"
+- "我想添加亮度调节功能，创建一个 OpenSpec 变更提案"
 
 **步骤 1.2：AI 创建提案**  
 AI 会按照 OpenSpec 格式创建提案，包括：  
