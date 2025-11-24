@@ -1,4 +1,5 @@
 **前提：本文记录使用AI Coding的经验，记录新人第一个接触AI Coding 碰到的任何问题**
+
 注：第一次使用的是cursor
 
 1. 安装时推荐配置：**IDE Layout**，IDE Layout 是真正的“VS Code 式”经典布局，Agent Layout 更偏向于聊天。
