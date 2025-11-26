@@ -283,14 +283,19 @@ fun writeToFile(filename: String, text: String) {
 
 ### 2.2.Fragment
 类似于Qt中的控件如QWidget，QDialog
-| Fragment 生命周期 | 与 Qt 中控件类比          | 功能描述                 |
-| :---------------- | :--------------------- | :---------------------- |
-| onCreate          | 构造函数                | 初始化数据非UI相关组件     |
-| onCreateView      | 将控件添加到布局         | 创建准备UI               |
-| onStart           | show()                 | 显示窗口                 |
-| onResume          | 获得焦点                | 窗口激活，可以交互         |
-| onDestroyView     | 从布局移除但对象还在      | UI销毁但对象还在          |
-| onDestroy         | 析构函数                | 完全销毁，清理资源         |
+| 序号 | Fragment 生命周期      | 与 Qt 控件最贴切的类比                          | 功能描述（2025 年推荐做法）                                                                 |
+| :--: | :--------------------- | :--------------------------------------------- | :------------------------------------------------------------------------------------------------- |
+|  1   | **onAttach()**         | QObject 被添加到 parent（setParent）           | Fragment 与 Activity 建立关联，可安全获取 Activity（常用于接口强转或 activityViewModels）          |
+|  2   | **onCreate()**         | 构造函数（QWidget 子类构造函数）                | Fragment 实例化完成，初始化 ViewModel、非 UI 数据、读取 savedInstanceState（不准碰 UI）           |
+|  3   | **onCreateView()**     | QWidget::create() 或 inflate QML（布局加载）    | 创建并返回 Fragment 的视图层次（ViewBinding.inflate / LayoutInflater），只负责返回 root            |
+|  4   | **onViewCreated()**    | QWidget::showEvent() 第一阶段（布局已完成）     | ★ 最重要！视图已创建完成，安全找控件、设置点击事件、observe LiveData/Flow、启动动画                |
+|  5   | **onStart()**          | QWidget::showEvent()（真正显示到屏幕）         | Fragment 变得对用户可见（但可能被半透明 Activity 盖住），适合注册广播、传感器、前台服务            |
+|  6   | **onResume()**         | QWidget::focusInEvent() + 窗口激活              | Fragment 完全可见且可交互（位于栈顶），开启摄像头、动画、定位、刷新 UI（用户真正看到并能操作）     |
+|  7   | **onPause()**          | QWidget::focusOutEvent() 或窗口失去焦点         | 即将失去交互能力（另一个 Activity 弹起、按 Home），立即暂停动画、摄像头、定位等                     |
+|  8   | **onStop()**           | QWidget::hideEvent()（完全不可见）              | Fragment 完全不可见，停止耗时任务、注销广播、前台服务等                                           |
+|  9   | **onDestroyView()**    | QWidget 布局被清除（removeWidget 但对象未 delete）| ★ 必须清空 Binding！视图被销毁（切 Fragment、返回栈弹出），清理所有 View 相关资源，防止内存泄漏   |
+| 10   | **onDestroy()**        | QObject::~QObject() 即将析构                   | Fragment 实例即将被销毁，极少写代码，清理全局资源（如线程池、单例引用）                           |
+| 11   | **onDetach()**         | QObject::parent() 被设为 nullptr                | Fragment 与 Activity 彻底脱离，之后不能再访问 Activity，基本空着                                 |
 
 ## 3.常见布局（LinearLayout、ConstraintLayout）
 ### 3.1.LinearLayout(线性布局)
